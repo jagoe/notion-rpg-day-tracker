@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Notion RPG Time Tracker",
-  "version": "1.0",
-  "description": "Extend the fabulous notion.so by an in-game time tracker and the possibility to trigger reminders for in-game dates",
+  "name": "Notion RPG Day Tracker",
+  "version": "0.1",
+  "description": "Extend the fabulous notion.so by an in-game day tracker.",
   "permissions": [
     "storage"
   ],
