@@ -6,13 +6,17 @@
   margin: 0 2px;
 }
 
-#time-tracker-days {
+.time-tracker input,
+.time-tracker button {
   background-color: transparent;
+}
+
+#time-tracker-days {
   width: 5em;
   height: 24px;
 }
 
-.add-reminder {
+.reminders-toggle {
   position: relative;
   top: 3px;
   height: 20px;
@@ -23,15 +27,15 @@
   border: 0;
 }
 
-.add-reminder:hover {
+.reminders-toggle:hover {
   background-color: rgb(71, 76, 80);
   border-radius: 2px;
 }
 
 .reminder-popup {
-  position: absolute;
+  position: fixed;
   height: 240px;
-  width: 120px;
+  width: 350px;
   display: none;
   visibility: hidden;
 }
@@ -39,4 +43,17 @@
 .reminder-popup.show {
   display: block;
   visibility: visible;
+}
+
+input.new-reminder {
+  width: 320px;
+}
+
+button.add-reminder {
+  position: absolute;
+  right: 0;
+}
+
+.reminders td {
+  padding: 2px;
 }
