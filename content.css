@@ -1,4 +1,32 @@
+.time-tracker {
+  font-size: 14px;
+}
+
+.time-tracker > * {
+  margin: 0 2px;
+}
+
 #time-tracker-days {
   background-color: transparent;
   width: 5em;
+  height: 24px;
+}
+
+.add-reminder {
+  position: relative;
+  top: 3px;
+  height: 20px;
+  width: 20px;
+  background-image: url(https://notion-emojis.s3-us-west-2.amazonaws.com/v0/svg-twitter/1f55b.svg);
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: 0;
+}
+
+.add-reminder:hover {
+  background-color: rgb(71, 76, 80);
+  border-radius: 2px;
+}
+
+.reminder-popup {
 }
