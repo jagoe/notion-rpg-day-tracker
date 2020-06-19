@@ -29,4 +29,14 @@
 }
 
 .reminder-popup {
+  position: absolute;
+  height: 240px;
+  width: 120px;
+  display: none;
+  visibility: hidden;
+}
+
+.reminder-popup.show {
+  display: block;
+  visibility: visible;
 }

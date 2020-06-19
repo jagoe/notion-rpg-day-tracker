@@ -55,22 +55,57 @@ function createTimeTracker(initialDay) {
 
   const reminderButton = document.createElement('button')
   reminderButton.classList.add('add-reminder')
-  reminderButton.addEventListener('click', createReminderPopup)
+  reminderButton.addEventListener('click', toggleReminderPopup)
 
   timeTracker.appendChild(label)
   timeTracker.appendChild(days)
   timeTracker.appendChild(reminderButton)
+  timeTracker.appendChild(createReminderPopup())
 
   return timeTracker
 }
 
-// TODO: add popup where reminders can be added (either als text or with a day input field [N for abs or +N for rel])
-function createReminderPopup() {}
+function createReminderPopup() {
+  const popup = document.createElement('div')
+  popup.classList.add('reminder-popup')
+
+  popup.textContent = 'Reminders'
+
+  return popup
+}
+
+function toggleReminderPopup(event) {
+  event.stopImmediatePropagation()
+
+  const popup = document.querySelector('.reminder-popup')
+  if (popup.classList.contains('show')) {
+    hideReminderPopup(event)
+  } else {
+    showReminderPopup(event)
+  }
+}
+
+function showReminderPopup(event) {
+  event.stopImmediatePropagation()
+
+  const popup = document.querySelector('.reminder-popup')
+  popup.classList.add('show')
+  document.addEventListener('click', hideReminderPopup)
+}
+
+function hideReminderPopup(event) {
+  if (event.target.classList.contains('reminder-popup')) {
+    event.stopImmediatePropagation()
+    return
+  }
+
+  document.querySelector('.reminder-popup').classList.remove('show')
+  document.removeEventListener('click', hideReminderPopup)
+}
 
 const relativeReminderPattern = /(?:in (?:(\d+) days|(1) day)|(\d+) Tage später|nach (\d+) Tagen|in (\d+) Tagen)/i
 const absoluteReminderPattern = /(?:Tag (\d+)|day (\d+)|on (?:day (\d+)|the (\d+). day)|am (\d+). Tag|an Tag (\d+))/i
-// TODO: separate extraction & adding → addReminder(day, text) just adds the reminder
-async function addReminder(text) {
+async function parseReminderText(text) {
   let day
   const relativeMatches = relativeReminderPattern.exec(text)
   const absoluteMatches = absoluteReminderPattern.exec(text)
@@ -91,7 +126,11 @@ async function addReminder(text) {
     }
   }
 
-  if (!day) {
+  return day
+}
+
+async function addReminder(day, text) {
+  if (!day || day < 0) {
     return
   }
 
