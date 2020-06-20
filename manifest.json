@@ -15,7 +15,7 @@
         "content.css"
       ],
       "js": [
-        "content.js"
+        "dist/content.js"
       ]
     }
   ],

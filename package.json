@@ -1,0 +1,28 @@
+{
+  "name": "notion-rpg-time-tracker",
+  "version": "0.1",
+  "description": "A Chrome extension that adds a day tracker and reminders to the fabulous notion.so",
+  "main": "dist/index.js",
+  "repository": "git@github.com:jagoe/notion-rpg-time-tracker.git",
+  "author": "Jakob Goebel <goebel.jakob@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "clean:build": "rm -rf dist/*",
+    "clean:release": "rm -rf release/*",
+    "prebuild": "yarn clean:build",
+    "build": "tsc",
+    "lint": "eslint 'src/**/*.ts' --fix --format codeframe",
+    "prerelease": "yarn clean:release",
+    "release": "7z a -tzip -x!dist -x!.gitignore -x!.git -x!Makefile -x!README.md dist/notion-rpg-day-tracker.zip ."
+  },
+  "devDependencies": {
+    "@avenga/eslint-config": "^1.1.0",
+    "@typescript-eslint/eslint-plugin": "^3.3.0",
+    "@typescript-eslint/parser": "^3.3.0",
+    "eslint": "^7.3.0",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-prefer-arrow": "^1.2.1",
+    "typescript": "^3.9.5"
+  }
+}
