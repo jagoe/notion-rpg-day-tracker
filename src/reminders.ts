@@ -1,3 +1,4 @@
+import {EventEmitter} from './eventEmitter'
 import {Store} from './store'
 
 export interface Reminder {
@@ -10,34 +11,12 @@ export enum ReminderEvents {
   update = 'update',
 }
 
-interface EventMap {
-  [ReminderEvents.reminder]: ReminderEvent
-  [ReminderEvents.update]: RemindersUpdateEvent
-}
-
-class ReminderEvent extends Event {
-  public constructor(action: ReminderEvents, public reminder: Reminder) {
-    super(action)
-  }
-}
-
-class RemindersUpdateEvent extends Event {
-  public constructor(action: ReminderEvents, public reminders: Array<Reminder>) {
-    super(action)
-  }
-}
-
-type EventListener<T extends Event> = (event: T) => void
-
 interface ReminderStore {
   day: number
   reminders: Array<Reminder>
 }
 
-export class Reminders {
-  private _updateListeners: Array<EventListener<RemindersUpdateEvent>> = []
-  private _reminderListeners: Array<EventListener<ReminderEvent>> = []
-
+export class Reminders extends EventEmitter {
   private _store = new Store<ReminderStore>()
   private _reminders: Array<Reminder> = []
   private _currentDay: number = 0
@@ -45,6 +24,8 @@ export class Reminders {
   public initialized: Promise<void>
 
   public constructor() {
+    super()
+
     this.initialized = new Promise((resolve) => {
       void this._store.load('day', 'reminders').then((stored) => {
         this._currentDay = stored.day || 1
@@ -54,17 +35,6 @@ export class Reminders {
         resolve()
       })
     })
-  }
-
-  public on<T extends ReminderEvents>(event: T, fn: EventListener<EventMap[T]>): void {
-    switch (event) {
-      case ReminderEvents.update:
-        this._updateListeners.push(fn as EventListener<RemindersUpdateEvent>)
-        break
-      case ReminderEvents.reminder:
-        this._reminderListeners.push(fn as EventListener<ReminderEvent>)
-        break
-    }
   }
 
   public get currentDay(): number {
@@ -118,30 +88,6 @@ export class Reminders {
     await this._store.save('day', day)
 
     await this._checkReminders()
-  }
-
-  private _emit(
-    action: ReminderEvents,
-    {reminder, reminders}: {reminder?: Reminder; reminders?: Array<Reminder>},
-  ): void {
-    switch (action) {
-      case ReminderEvents.update:
-        for (const listenerCallback of this._updateListeners) {
-          if (!reminders) {
-            throw new Error(`Missing event prperty 'reminders'`)
-          }
-          listenerCallback(new RemindersUpdateEvent(action, reminders))
-        }
-        break
-      case ReminderEvents.reminder:
-        for (const listenerCallback of this._reminderListeners) {
-          if (!reminder) {
-            throw new Error(`Missing event prperty 'reminder'`)
-          }
-          listenerCallback(new ReminderEvent(action, reminder))
-          break
-        }
-    }
   }
 
   private async _checkReminders() {

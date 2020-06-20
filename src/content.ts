@@ -12,11 +12,12 @@ async function run() {
 }
 
 function setupEventListeners() {
-  _reminders.on(ReminderEvents.update, (event) => {
-    renderReminders(event.reminders)
+  _reminders.on(ReminderEvents.update, (data) => {
+    renderReminders(data.reminders as Array<Reminder>)
   })
-  _reminders.on(ReminderEvents.reminder, (event) => {
-    alert(`Day ${event.reminder.day}: ${event.reminder.text}`) // TODO: display properly as a toast or whatever
+  _reminders.on(ReminderEvents.reminder, (data) => {
+    const reminder = data.reminder as Reminder
+    alert(`Day ${reminder.day}: ${reminder.text}`) // TODO: display properly as a toast or whatever
   })
 }
 
