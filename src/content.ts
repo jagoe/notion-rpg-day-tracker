@@ -1,29 +1,27 @@
-import {Store} from './storage'
+import {Reminder, ReminderEvents, Reminders} from './reminders'
 
-// TODO: add events for those two, so storage and updates happen reactively
-interface Reminder {
-  day: number
-  text: string
-}
-type Reminders = Array<Reminder>
-interface ReminderStore {
-  day: number
-  reminders: Reminders
-}
-let _day: number
-let _reminders: Reminders
-const _dayPattern = /^\+?\d+$/
-const _store = new Store<ReminderStore>()
+const _reminders = new Reminders()
 
 async function run() {
   const topBarRightContainer = await waitFor('.notion-topbar > div > div:last-of-type')
 
-  const stored = await _store.load('day', 'reminders')
-
-  _reminders = (stored.reminders || []).sort((a, b) => a.day - b.day)
-  _day = Number(stored.day) || 1
+  await _reminders.initialized
+  setupEventListeners()
 
   topBarRightContainer.prepend(createTimeTracker())
+}
+
+function setupEventListeners() {
+  _reminders.on(ReminderEvents.add, () => {
+    renderReminders()
+  })
+  _reminders.on(ReminderEvents.remove, () => {
+    renderReminders()
+  })
+  _reminders.on(ReminderEvents.reminder, (event) => {
+    alert(`Day ${event.reminder.day}: ${event.reminder.text}`) // TODO: display properly as a toast or whatever
+    renderReminders()
+  })
 }
 
 async function waitFor(selector: string) {
@@ -49,7 +47,7 @@ function createTimeTracker() {
   days.type = 'number'
   days.id = 'time-tracker-days'
   days.size = 4
-  days.value = _day.toString()
+  days.value = _reminders.currentDay.toString()
   days.addEventListener('change', () => {
     let day = Number(days.value)
     if (day <= 1) {
@@ -57,7 +55,7 @@ function createTimeTracker() {
       days.value = '1'
     }
 
-    void changeInGameDay(day)
+    void _reminders.changeDay(day)
   })
 
   const reminderButton = document.createElement('button')
@@ -90,7 +88,8 @@ function createReminderPopup() {
     const day = dayInput.value
     const text = textInput.value
 
-    addReminder(day, text)
+    _reminders
+      .add(day, text)
       .then(() => {
         dayInput.value = ''
         textInput.value = ''
@@ -118,7 +117,7 @@ function renderReminders(table?: HTMLTableElement) {
   }
   table.innerHTML = ''
 
-  for (const reminder of _reminders) {
+  for (const reminder of _reminders.openReminders) {
     table.appendChild(renderReminder(reminder))
   }
 }
@@ -136,7 +135,7 @@ function renderReminder(reminder: Reminder) {
   const deleteReminder = document.createElement('button')
   deleteReminder.textContent = '-'
   deleteReminder.addEventListener('click', function () {
-    void removeReminder(reminder)
+    void _reminders.remove(reminder)
   })
   reminderActions.appendChild(deleteReminder)
 
@@ -176,64 +175,6 @@ function showReminderPopup() {
 function hideReminderPopup() {
   document.querySelector('.reminder-popup')!.classList.remove('show')
   document.getElementById('overlay')!.remove() // TODO: only remove if it exists
-}
-
-async function addReminder(dayString: string, text: string): Promise<void> {
-  if (!text) {
-    throw new Error('Please provide a reminder text.')
-  }
-
-  if (!_dayPattern.test(dayString)) {
-    throw new Error('Please provide a day, optionally prefixed with a + sign.')
-  }
-
-  const day = dayString.startsWith('+') ? _day + Number(dayString.substr(1)) : Number(dayString)
-
-  if (_reminders.some((reminder) => reminder.day === day && reminder.text === text)) {
-    throw new Error('That reminder already exists.')
-  }
-
-  _reminders.push({day, text})
-  _reminders = _reminders.sort((a, b) => a.day - b.day)
-
-  renderReminders()
-  await saveReminders()
-}
-
-async function removeReminder(reminder: Reminder) {
-  const index = _reminders.indexOf(reminder)
-  if (index === -1) {
-    return
-  }
-
-  _reminders.splice(index, 1)
-
-  renderReminders()
-  await saveReminders()
-}
-
-async function changeInGameDay(day: number) {
-  _day = day
-  await _store.save('day', day)
-
-  await checkReminders()
-}
-
-async function checkReminders() {
-  const reminders = _reminders.filter((reminder) => reminder.day <= _day)
-
-  for (const reminder of reminders) {
-    alert(`Day ${reminder.day}: ${reminder.text}`) // TODO: display properly as a toast or whatever
-    _reminders.splice(_reminders.indexOf(reminder), 1)
-  }
-
-  renderReminders()
-
-  await saveReminders()
-}
-
-async function saveReminders() {
-  await _store.save('reminders', _reminders)
 }
 
 void run()
