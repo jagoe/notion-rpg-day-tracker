@@ -6,9 +6,13 @@ export interface Reminder {
 }
 
 export enum ReminderEvents {
-  add = 'add',
-  remove = 'remove',
   reminder = 'reminder',
+  update = 'update',
+}
+
+interface EventMap {
+  [ReminderEvents.reminder]: ReminderEvent
+  [ReminderEvents.update]: RemindersUpdateEvent
 }
 
 class ReminderEvent extends Event {
@@ -17,7 +21,13 @@ class ReminderEvent extends Event {
   }
 }
 
-type EventListener = (event: ReminderEvent) => void
+class RemindersUpdateEvent extends Event {
+  public constructor(action: ReminderEvents, public reminders: Array<Reminder>) {
+    super(action)
+  }
+}
+
+type EventListener<T extends Event> = (event: T) => void
 
 interface ReminderStore {
   day: number
@@ -25,9 +35,8 @@ interface ReminderStore {
 }
 
 export class Reminders {
-  private _addListeners: Array<EventListener> = []
-  private _removeListeners: Array<EventListener> = []
-  private _reminderListeners: Array<EventListener> = []
+  private _updateListeners: Array<EventListener<RemindersUpdateEvent>> = []
+  private _reminderListeners: Array<EventListener<ReminderEvent>> = []
 
   private _store = new Store<ReminderStore>()
   private _reminders: Array<Reminder> = []
@@ -47,16 +56,13 @@ export class Reminders {
     })
   }
 
-  public on(event: ReminderEvents, fn: (event: ReminderEvent) => void): void {
+  public on<T extends ReminderEvents>(event: T, fn: EventListener<EventMap[T]>): void {
     switch (event) {
-      case ReminderEvents.add:
-        this._addListeners.push(fn)
-        break
-      case ReminderEvents.remove:
-        this._removeListeners.push(fn)
+      case ReminderEvents.update:
+        this._updateListeners.push(fn as EventListener<RemindersUpdateEvent>)
         break
       case ReminderEvents.reminder:
-        this._reminderListeners.push(fn)
+        this._reminderListeners.push(fn as EventListener<ReminderEvent>)
         break
     }
   }
@@ -89,7 +95,7 @@ export class Reminders {
     this._reminders.push(reminder)
     this._sortReminders()
 
-    this._emit(ReminderEvents.add, reminder) // TODO: send all reminders for re-render?
+    this._emit(ReminderEvents.update, {reminders: this.openReminders}) // TODO: send all reminders for re-render?
     await this._saveReminders()
   }
 
@@ -103,7 +109,7 @@ export class Reminders {
 
     this._reminders.splice(index, 1)
 
-    this._emit(ReminderEvents.remove, reminder) // TODO: send all reminders for re-render?
+    this._emit(ReminderEvents.update, {reminders: this.openReminders}) // TODO: send all reminders for re-render?
     await this._saveReminders()
   }
 
@@ -114,24 +120,27 @@ export class Reminders {
     await this._checkReminders()
   }
 
-  private _emit(action: ReminderEvents, reminder: Reminder): void {
-    const event = new ReminderEvent(action, reminder)
-    let queue: Array<EventListener>
-
+  private _emit(
+    action: ReminderEvents,
+    {reminder, reminders}: {reminder?: Reminder; reminders?: Array<Reminder>},
+  ): void {
     switch (action) {
-      case ReminderEvents.add:
-        queue = this._addListeners
-        break
-      case ReminderEvents.remove:
-        queue = this._removeListeners
+      case ReminderEvents.update:
+        for (const listenerCallback of this._updateListeners) {
+          if (!reminders) {
+            throw new Error(`Missing event prperty 'reminders'`)
+          }
+          listenerCallback(new RemindersUpdateEvent(action, reminders))
+        }
         break
       case ReminderEvents.reminder:
-        queue = this._reminderListeners
-        break
-    }
-
-    for (const listenerCallback of queue) {
-      listenerCallback(event)
+        for (const listenerCallback of this._reminderListeners) {
+          if (!reminder) {
+            throw new Error(`Missing event prperty 'reminder'`)
+          }
+          listenerCallback(new ReminderEvent(action, reminder))
+          break
+        }
     }
   }
 
@@ -140,10 +149,10 @@ export class Reminders {
 
     for (const reminder of dueReminders) {
       this._reminders.splice(this._reminders.indexOf(reminder), 1)
-      this._emit(ReminderEvents.reminder, reminder)
+      this._emit(ReminderEvents.reminder, {reminder})
     }
 
-    // TODO: send all reminders for re-render?
+    this._emit(ReminderEvents.update, {reminders: this.openReminders})
 
     await this._saveReminders()
   }

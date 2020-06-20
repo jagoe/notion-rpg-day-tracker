@@ -12,15 +12,11 @@ async function run() {
 }
 
 function setupEventListeners() {
-  _reminders.on(ReminderEvents.add, () => {
-    renderReminders()
-  })
-  _reminders.on(ReminderEvents.remove, () => {
-    renderReminders()
+  _reminders.on(ReminderEvents.update, (event) => {
+    renderReminders(event.reminders)
   })
   _reminders.on(ReminderEvents.reminder, (event) => {
     alert(`Day ${event.reminder.day}: ${event.reminder.text}`) // TODO: display properly as a toast or whatever
-    renderReminders()
   })
 }
 
@@ -84,7 +80,8 @@ function createReminderPopup() {
   const addButton = document.createElement('button')
   addButton.classList.add('add-reminder')
   addButton.textContent = '+'
-  addButton.addEventListener('click', () => {
+
+  const addReminder = () => {
     const day = dayInput.value
     const text = textInput.value
 
@@ -97,11 +94,15 @@ function createReminderPopup() {
       .catch((error: Error) => {
         alert(error.message) // TODO: flash message
       })
-  })
+  }
+
+  addButton.addEventListener('click', addReminder)
+  dayInput.addEventListener('keypress', (event) => event.keyCode === 13 && addReminder())
+  textInput.addEventListener('keypress', (event) => event.keyCode === 13 && addReminder())
 
   const reminders = document.createElement('table')
   reminders.classList.add('reminders')
-  renderReminders(reminders)
+  renderReminders(_reminders.openReminders, reminders)
 
   popup.appendChild(dayInput)
   popup.appendChild(textInput)
@@ -111,13 +112,13 @@ function createReminderPopup() {
   return popup
 }
 
-function renderReminders(table?: HTMLTableElement) {
+function renderReminders(reminders: Array<Reminder>, table?: HTMLTableElement) {
   if (!table) {
     table = document.querySelector('table.reminders') as HTMLTableElement
   }
   table.innerHTML = ''
 
-  for (const reminder of _reminders.openReminders) {
+  for (const reminder of reminders) {
     table.appendChild(renderReminder(reminder))
   }
 }
