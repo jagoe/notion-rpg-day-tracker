@@ -19,7 +19,7 @@
     "keyofStringsOnly": true,
     "lib": [
       "DOM",
-      "ES2015"
+      "ES2020"
     ],
     "module": "AMD",
     "noFallthroughCasesInSwitch": true,

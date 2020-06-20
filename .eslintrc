@@ -10,5 +10,8 @@
   "rules": {
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/ban-ts-ignore": "off"
+  },
+  "globals": {
+    "chrome": true
   }
 }

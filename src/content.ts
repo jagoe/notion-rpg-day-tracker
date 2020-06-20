@@ -1,6 +1,11 @@
 // TODO: add events for those two, so storage and updates happen reactively
-let _day
-let _reminders
+interface Reminder {
+  day: number
+  text: string
+}
+type Reminders = Array<Reminder>
+let _day: number
+let _reminders: Reminders
 const _dayPattern = /^\+?\d+$/
 
 // TODO: split into separate files for storage, logic, presentation, etc.
@@ -8,8 +13,10 @@ const _dayPattern = /^\+?\d+$/
 async function run() {
   const topBarRightContainer = await waitFor('.notion-topbar > div > div:last-of-type')
 
-  const { day, reminders } = await new Promise((resolve) =>
-    chrome.storage.sync.get(['day', 'reminders'], ({ day, reminders }) => resolve({ day, reminders })),
+  const { day, reminders } = await new Promise<{ day: number; reminders: Reminders }>((resolve) =>
+    chrome.storage.sync.get(['day', 'reminders'], (items) =>
+      resolve({ day: items.day as number, reminders: items.reminders as Reminders }),
+    ),
   )
 
   _reminders = (reminders || []).sort((a, b) => a.day - b.day)
@@ -18,7 +25,8 @@ async function run() {
   topBarRightContainer.prepend(createTimeTracker())
 }
 
-async function waitFor(selector) {
+async function waitFor(selector: string) {
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const el = document.querySelector(selector)
     if (el) return el
@@ -40,12 +48,12 @@ function createTimeTracker() {
   days.type = 'number'
   days.id = 'time-tracker-days'
   days.size = 4
-  days.value = _day
+  days.value = _day.toString()
   days.addEventListener('change', () => {
     let day = Number(days.value)
     if (day <= 1) {
       day = 1
-      days.value = 1
+      days.value = '1'
     }
 
     changeInGameDay(day)
@@ -80,22 +88,11 @@ function createReminderPopup() {
   addButton.addEventListener('click', () => {
     const day = dayInput.value
     const text = textInput.value
-    if (!_dayPattern.test(day)) {
-      // TODO: add flash message module
-      alert('Please provide the day as a number, optionally prefixed with a + sign.')
-      return
-    }
-    if (!text) {
-      alert('Please provide a reminder text.')
-      return
-    }
 
-    if (_reminders.some((reminder) => reminder.day === day && reminder.text === text)) {
-      alert('That reminder already exists')
-      return
+    const error = addReminder(day, text)
+    if (error) {
+      alert(error)
     }
-
-    addReminder(day, text)
 
     dayInput.value = ''
     textInput.value = ''
@@ -113,24 +110,22 @@ function createReminderPopup() {
   return popup
 }
 
-function renderReminders(table) {
+function renderReminders(table?: HTMLTableElement) {
   if (!table) {
-    table = document.querySelector('table.reminders')
+    table = document.querySelector('table.reminders') as HTMLTableElement
   }
   table.innerHTML = ''
 
-  for (let i = 0; i < _reminders.length; i++) {
-    const reminderRow = renderReminder(_reminders[i])
-
-    table.appendChild(reminderRow)
+  for (const reminder of _reminders) {
+    table.appendChild(renderReminder(reminder))
   }
 }
 
-function renderReminder(reminder) {
+function renderReminder(reminder: Reminder) {
   const reminderRow = document.createElement('tr')
 
   const reminderDay = document.createElement('td')
-  reminderDay.textContent = reminder.day
+  reminderDay.textContent = reminder.day.toString()
 
   const reminderText = document.createElement('td')
   reminderText.textContent = reminder.text
@@ -150,50 +145,50 @@ function renderReminder(reminder) {
   return reminderRow
 }
 
-function toggleReminderPopup(event) {
+function toggleReminderPopup(event: Event) {
   event.stopImmediatePropagation()
 
-  const popup = document.querySelector('.reminder-popup')
+  const popup = document.querySelector('.reminder-popup')!
   if (popup.classList.contains('show')) {
-    hideReminderPopup(event)
+    hideReminderPopup()
   } else {
-    showReminderPopup(event)
+    showReminderPopup()
   }
 }
 
 function showReminderPopup() {
-  const popup = document.querySelector('.reminder-popup')
+  const popup = document.querySelector('.reminder-popup')!
   popup.classList.add('show')
 
   const overlay = document.createElement('div')
   overlay.id = 'overlay'
   overlay.style.position = 'fixed'
-  overlay.style.left = 0
-  overlay.style.top = 0
+  overlay.style.left = '0'
+  overlay.style.top = '0'
   overlay.style.width = '100%'
   overlay.style.height = '100%'
   overlay.addEventListener('click', hideReminderPopup)
-  popup.parentElement.prepend(overlay)
+  popup.parentElement!.prepend(overlay)
 }
 
 function hideReminderPopup() {
-  document.querySelector('.reminder-popup').classList.remove('show')
-  document.getElementById('overlay').remove()
+  document.querySelector('.reminder-popup')!.classList.remove('show')
+  document.getElementById('overlay')!.remove() // TODO: only remove if it exists
 }
 
-function addReminder(day, text) {
-  if (!_dayPattern.test(day)) {
-    return
+function addReminder(dayString: string, text: string): void | string {
+  if (!text) {
+    return 'Please provide a reminder text.'
   }
 
-  if (day.startsWith('+')) {
-    day = _day + Number(day.substr(1))
-  } else {
-    day = Number(day)
+  if (!_dayPattern.test(dayString)) {
+    return 'Please provide a day, optionally prefixed with a + sign.'
   }
+
+  const day = dayString.startsWith('+') ? _day + Number(dayString.substr(1)) : Number(dayString)
 
   if (_reminders.some((reminder) => reminder.day === day && reminder.text === text)) {
-    return
+    return 'That reminder already exists.'
   }
 
   _reminders.push({ day, text })
@@ -203,7 +198,7 @@ function addReminder(day, text) {
   saveReminders()
 }
 
-function removeReminder(reminder) {
+function removeReminder(reminder: Reminder) {
   const index = _reminders.indexOf(reminder)
   if (index === -1) {
     return
@@ -215,15 +210,15 @@ function removeReminder(reminder) {
   saveReminders()
 }
 
-function changeInGameDay(day) {
-  _day = Number(day)
-  new Promise((resolve) => chrome.storage.sync.set({ day }, resolve))
+function changeInGameDay(day: number) {
+  _day = day
+  chrome.storage.sync.set({ day })
 
   checkReminders()
 }
 
-function checkReminders(currentDay) {
-  const reminders = _reminders.filter((reminder) => reminder.day <= currentDay)
+function checkReminders() {
+  const reminders = _reminders.filter((reminder) => reminder.day <= _day)
 
   for (const reminder of reminders) {
     alert(`Day ${reminder.day}: ${reminder.text}`) // TODO: display properly as a toast or whatever
@@ -235,14 +230,8 @@ function checkReminders(currentDay) {
   saveReminders()
 }
 
-function clearReminders() {
-  _reminders = []
-  // TODO: refactor saving/loading
-  saveReminders()
+function saveReminders() {
+  chrome.storage.sync.set({ reminders: _reminders })
 }
 
-async function saveReminders() {
-  return new Promise((resolve) => chrome.storage.sync.set({ reminders: _reminders }, resolve))
-}
-
-run()
+void run()
