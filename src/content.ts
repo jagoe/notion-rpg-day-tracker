@@ -135,7 +135,9 @@ function renderReminder(reminder: Reminder) {
   const deleteReminder = document.createElement('button')
   deleteReminder.textContent = '-'
   deleteReminder.addEventListener('click', function () {
-    void _reminders.remove(reminder)
+    void _reminders.remove(reminder).catch((error: Error) => {
+      alert(error.message) // TODO: use flash bar
+    })
   })
   reminderActions.appendChild(deleteReminder)
 

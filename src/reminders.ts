@@ -38,8 +38,8 @@ export class Reminders {
   public constructor() {
     this.initialized = new Promise((resolve) => {
       void this._store.load('day', 'reminders').then((stored) => {
-        this._currentDay = stored.day
-        this._reminders = stored.reminders
+        this._currentDay = stored.day || 1
+        this._reminders = stored.reminders || []
         this._sortReminders()
 
         resolve()
@@ -54,6 +54,9 @@ export class Reminders {
         break
       case ReminderEvents.remove:
         this._removeListeners.push(fn)
+        break
+      case ReminderEvents.reminder:
+        this._reminderListeners.push(fn)
         break
     }
   }
@@ -86,21 +89,21 @@ export class Reminders {
     this._reminders.push(reminder)
     this._sortReminders()
 
-    // renderReminders() // TODO: render on add
-    this._emit(ReminderEvents.add, reminder)
+    this._emit(ReminderEvents.add, reminder) // TODO: send all reminders for re-render?
     await this._saveReminders()
   }
 
   public async remove(reminder: Reminder): Promise<void> {
-    const index = this._reminders.indexOf(reminder)
+    const index = this._reminders.findIndex(
+      (existing) => existing.day === reminder.day && existing.text === reminder.text,
+    )
     if (index === -1) {
-      return
+      throw new Error(`Could not find reminder 'Day ${reminder.day}: ${reminder.text}'`)
     }
 
     this._reminders.splice(index, 1)
 
-    // renderReminders() // TODO: re-render on remove
-    this._emit(ReminderEvents.remove, reminder)
+    this._emit(ReminderEvents.remove, reminder) // TODO: send all reminders for re-render?
     await this._saveReminders()
   }
 
@@ -136,9 +139,11 @@ export class Reminders {
     const dueReminders = this._reminders.filter((reminder) => reminder.day <= this._currentDay)
 
     for (const reminder of dueReminders) {
-      this._emit(ReminderEvents.reminder, reminder)
       this._reminders.splice(this._reminders.indexOf(reminder), 1)
+      this._emit(ReminderEvents.reminder, reminder)
     }
+
+    // TODO: send all reminders for re-render?
 
     await this._saveReminders()
   }
