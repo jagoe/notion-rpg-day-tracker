@@ -13,8 +13,8 @@
     "prebuild": "yarn clean:build",
     "build": "tsc",
     "lint": "eslint 'src/**/*.ts' --fix --format codeframe",
-    "prerelease": "yarn clean:release",
-    "release": "7z a -tzip -x!dist -x!.gitignore -x!.git -x!Makefile -x!README.md dist/notion-rpg-day-tracker.zip ."
+    "prerelease": "yarn clean:release && yarn build",
+    "release": "archive=\"./release/notion-rpg-day-tracker.$(jq -r '.version' < ./package.json).zip\" && 7z a -r0 -tzip $archive ./dist ./static/*"
   },
   "devDependencies": {
     "@avenga/eslint-config": "^1.1.0",

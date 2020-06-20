@@ -12,7 +12,7 @@
         "*://*.notion.so/*"
       ],
       "css": [
-        "content.css"
+        "dist/content.css"
       ],
       "js": [
         "dist/content.js"
