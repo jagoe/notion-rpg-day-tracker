@@ -1,15 +1,15 @@
+// TODO: add events for those two, so storage and updates happen reactively
 let _day
 let _reminders
+const _dayPattern = /^\+?\d+$/
+
+// TODO: split into separate files for storage, logic, presentation, etc.
 
 async function run() {
-  const topBarRightContainer = await waitFor(
-    '.notion-topbar > div > div:last-of-type',
-  )
+  const topBarRightContainer = await waitFor('.notion-topbar > div > div:last-of-type')
 
-  const {day, reminders} = await new Promise((resolve) =>
-    chrome.storage.sync.get(['day', 'reminders'], ({day, reminders}) =>
-      resolve({day, reminders}),
-    ),
+  const { day, reminders } = await new Promise((resolve) =>
+    chrome.storage.sync.get(['day', 'reminders'], ({ day, reminders }) => resolve({ day, reminders })),
   )
 
   _reminders = (reminders || []).sort((a, b) => a.day - b.day)
@@ -29,6 +29,7 @@ async function waitFor(selector) {
 
 function createTimeTracker() {
   const timeTracker = document.createElement('div')
+  timeTracker.addEventListener('keydown', (event) => event.stopImmediatePropagation())
   timeTracker.classList.add('time-tracker')
 
   const label = document.createElement('label')
@@ -40,9 +41,6 @@ function createTimeTracker() {
   days.id = 'time-tracker-days'
   days.size = 4
   days.value = _day
-  days.addEventListener('keydown', ($event) =>
-    $event.stopImmediatePropagation(),
-  )
   days.addEventListener('change', () => {
     let day = Number(days.value)
     if (day <= 1) {
@@ -69,31 +67,46 @@ function createReminderPopup() {
   const popup = document.createElement('div')
   popup.classList.add('reminder-popup')
 
-  const input = document.createElement('input')
-  input.classList.add('new-reminder')
-  input.placeholder = 'New Reminder'
+  const dayInput = document.createElement('input')
+  dayInput.classList.add('new-reminder-day')
+  dayInput.placeholder = 'Day'
+  const textInput = document.createElement('input')
+  textInput.classList.add('new-reminder-text')
+  textInput.placeholder = 'New Reminder'
 
   const addButton = document.createElement('button')
   addButton.classList.add('add-reminder')
   addButton.textContent = '+'
   addButton.addEventListener('click', () => {
-    const text = input.value
-    const day = parseReminderText(text)
-    if (!day) {
-      // TODO: prettier errors
-      alert('Could not parse reminder text')
+    const day = dayInput.value
+    const text = textInput.value
+    if (!_dayPattern.test(day)) {
+      // TODO: add flash message module
+      alert('Please provide the day as a number, optionally prefixed with a + sign.')
+      return
+    }
+    if (!text) {
+      alert('Please provide a reminder text.')
+      return
+    }
+
+    if (_reminders.some((reminder) => reminder.day === day && reminder.text === text)) {
+      alert('That reminder already exists')
       return
     }
 
     addReminder(day, text)
-    input.value = ''
+
+    dayInput.value = ''
+    textInput.value = ''
   })
 
   const reminders = document.createElement('table')
   reminders.classList.add('reminders')
   renderReminders(reminders)
 
-  popup.appendChild(input)
+  popup.appendChild(dayInput)
+  popup.appendChild(textInput)
   popup.appendChild(addButton)
   popup.appendChild(reminders)
 
@@ -106,29 +119,35 @@ function renderReminders(table) {
   }
   table.innerHTML = ''
 
-  for (const reminder of _reminders) {
-    const reminderRow = document.createElement('tr')
-
-    const reminderDay = document.createElement('td')
-    reminderDay.textContent = reminder.day
-
-    const reminderText = document.createElement('td')
-    reminderText.textContent = reminder.text
-
-    const reminderActions = document.createElement('td')
-    const deleteReminder = document.createElement('button')
-    deleteReminder.textContent = '-'
-    deleteReminder.addEventListener('click', () => {
-      removeReminder(reminder)
-    })
-    reminderActions.appendChild(deleteReminder)
-
-    reminderRow.appendChild(reminderDay)
-    reminderRow.appendChild(reminderText)
-    reminderRow.appendChild(reminderActions)
+  for (let i = 0; i < _reminders.length; i++) {
+    const reminderRow = renderReminder(_reminders[i])
 
     table.appendChild(reminderRow)
   }
+}
+
+function renderReminder(reminder) {
+  const reminderRow = document.createElement('tr')
+
+  const reminderDay = document.createElement('td')
+  reminderDay.textContent = reminder.day
+
+  const reminderText = document.createElement('td')
+  reminderText.textContent = reminder.text
+
+  const reminderActions = document.createElement('td')
+  const deleteReminder = document.createElement('button')
+  deleteReminder.textContent = '-'
+  deleteReminder.addEventListener('click', function () {
+    removeReminder(reminder)
+  })
+  reminderActions.appendChild(deleteReminder)
+
+  reminderRow.appendChild(reminderDay)
+  reminderRow.appendChild(reminderText)
+  reminderRow.appendChild(reminderActions)
+
+  return reminderRow
 }
 
 function toggleReminderPopup(event) {
@@ -162,38 +181,22 @@ function hideReminderPopup() {
   document.getElementById('overlay').remove()
 }
 
-const relativeReminderPattern = /(?:in (?:(\d+) days|(1) day)|(\d+) Tage später|nach (\d+) Tagen|in (\d+) Tagen)/i
-const absoluteReminderPattern = /(?:Tag (\d+)|day (\d+)|on (?:day (\d+)|the (\d+). day)|am (\d+). Tag|an Tag (\d+))/i
-function parseReminderText(text) {
-  let day
-  const relativeMatches = relativeReminderPattern.exec(text)
-  const absoluteMatches = absoluteReminderPattern.exec(text)
-
-  if (relativeMatches) {
-    for (const match of relativeMatches.slice(1)) {
-      if (!match) continue
-
-      day = _day + Number(match)
-      break
-    }
-  } else if (absoluteMatches) {
-    for (const match of absoluteMatches.slice(1)) {
-      if (!match) continue
-
-      day = Number(match)
-      break
-    }
-  }
-
-  return day
-}
-
 function addReminder(day, text) {
-  if (!day || day < 0) {
+  if (!_dayPattern.test(day)) {
     return
   }
 
-  _reminders.push({day, text})
+  if (day.startsWith('+')) {
+    day = _day + Number(day.substr(1))
+  } else {
+    day = Number(day)
+  }
+
+  if (_reminders.some((reminder) => reminder.day === day && reminder.text === text)) {
+    return
+  }
+
+  _reminders.push({ day, text })
   _reminders = _reminders.sort((a, b) => a.day - b.day)
 
   renderReminders()
@@ -201,7 +204,10 @@ function addReminder(day, text) {
 }
 
 function removeReminder(reminder) {
-  const index = _reminders.indexOf((r) => r === reminder)
+  const index = _reminders.indexOf(reminder)
+  if (index === -1) {
+    return
+  }
 
   _reminders.splice(index, 1)
 
@@ -211,7 +217,7 @@ function removeReminder(reminder) {
 
 function changeInGameDay(day) {
   _day = Number(day)
-  new Promise((resolve) => chrome.storage.sync.set({day}, resolve))
+  new Promise((resolve) => chrome.storage.sync.set({ day }, resolve))
 
   checkReminders()
 }
@@ -236,9 +242,7 @@ function clearReminders() {
 }
 
 async function saveReminders() {
-  return new Promise((resolve) =>
-    chrome.storage.sync.set({reminders: _reminders}, resolve),
-  )
+  return new Promise((resolve) => chrome.storage.sync.set({ reminders: _reminders }, resolve))
 }
 
 run()

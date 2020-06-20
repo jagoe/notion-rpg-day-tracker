@@ -45,13 +45,25 @@
   visibility: visible;
 }
 
-input.new-reminder {
-  width: 320px;
+/* TODO: use flex or grid for this row */
+input.new-reminder-day {
+  width: 60px;
+  margin-right: 5px;
+}
+
+input.new-reminder-text {
+  width: 250px;
+  margin-right: 5px;
 }
 
 button.add-reminder {
   position: absolute;
   right: 0;
+}
+
+table.reminders {
+  /* TODO: maybe use flex/grid for this as well */
+  width: 100%;
 }
 
 .reminders td {
