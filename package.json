@@ -12,9 +12,9 @@
     "clean:release": "rm -rf release/*",
     "prebuild": "yarn clean:build",
     "build": "tsc",
-    "lint": "eslint 'src/**/*.ts' --fix --format codeframe",
+    "lint": "eslint 'extension/src/**/*.ts' --fix --format codeframe",
     "prerelease": "yarn clean:release && yarn build",
-    "release": "archive=\"./release/notion-rpg-day-tracker.$(jq -r '.version' < ./package.json).zip\" && 7z a -r0 -tzip $archive ./dist ./static/*"
+    "release": "archive=\"./release/notion-rpg-day-tracker.$(jq -r '.version' < ./package.json).zip\" && 7z a -r0 -tzip $archive ./dist ./images ./styles ./manifest.json"
   },
   "devDependencies": {
     "@avenga/eslint-config": "^1.1.0",
