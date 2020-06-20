@@ -1,4 +1,4 @@
-import {Reminder, ReminderEvents, Reminders} from './reminders'
+import {Reminder, Reminders} from './reminders'
 
 const _reminders = new Reminders()
 
@@ -12,11 +12,10 @@ async function run() {
 }
 
 function setupEventListeners() {
-  _reminders.on(ReminderEvents.update, (data) => {
-    renderReminders(data.reminders as Array<Reminder>)
+  _reminders.on('update', (reminders) => {
+    renderReminders(reminders)
   })
-  _reminders.on(ReminderEvents.reminder, (data) => {
-    const reminder = data.reminder as Reminder
+  _reminders.on('reminder', (reminder) => {
     alert(`Day ${reminder.day}: ${reminder.text}`) // TODO: display properly as a toast or whatever
   })
 }

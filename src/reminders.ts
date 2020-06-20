@@ -6,17 +6,17 @@ export interface Reminder {
   text: string
 }
 
-export enum ReminderEvents {
-  reminder = 'reminder',
-  update = 'update',
-}
-
 interface ReminderStore {
   day: number
   reminders: Array<Reminder>
 }
 
-export class Reminders extends EventEmitter {
+interface ReminderEvents {
+  reminder: Reminder
+  update: Array<Reminder>
+}
+
+export class Reminders extends EventEmitter<ReminderEvents> {
   private _store = new Store<ReminderStore>()
   private _reminders: Array<Reminder> = []
   private _currentDay: number = 0
@@ -65,7 +65,7 @@ export class Reminders extends EventEmitter {
     this._reminders.push(reminder)
     this._sortReminders()
 
-    this._emit(ReminderEvents.update, {reminders: this.openReminders}) // TODO: send all reminders for re-render?
+    this._emit('update', this.openReminders) // TODO: send all reminders for re-render?
     await this._saveReminders()
   }
 
@@ -79,7 +79,7 @@ export class Reminders extends EventEmitter {
 
     this._reminders.splice(index, 1)
 
-    this._emit(ReminderEvents.update, {reminders: this.openReminders}) // TODO: send all reminders for re-render?
+    this._emit('update', this.openReminders) // TODO: send all reminders for re-render?
     await this._saveReminders()
   }
 
@@ -95,10 +95,10 @@ export class Reminders extends EventEmitter {
 
     for (const reminder of dueReminders) {
       this._reminders.splice(this._reminders.indexOf(reminder), 1)
-      this._emit(ReminderEvents.reminder, {reminder})
+      this._emit('reminder', reminder)
     }
 
-    this._emit(ReminderEvents.update, {reminders: this.openReminders})
+    this._emit('update', this.openReminders)
 
     await this._saveReminders()
   }
