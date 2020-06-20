@@ -1,26 +1,27 @@
+import {Store} from './storage'
+
 // TODO: add events for those two, so storage and updates happen reactively
 interface Reminder {
   day: number
   text: string
 }
 type Reminders = Array<Reminder>
+interface ReminderStore {
+  day: number
+  reminders: Reminders
+}
 let _day: number
 let _reminders: Reminders
 const _dayPattern = /^\+?\d+$/
-
-// TODO: split into separate files for storage, logic, presentation, etc.
+const _store = new Store<ReminderStore>()
 
 async function run() {
   const topBarRightContainer = await waitFor('.notion-topbar > div > div:last-of-type')
 
-  const { day, reminders } = await new Promise<{ day: number; reminders: Reminders }>((resolve) =>
-    chrome.storage.sync.get(['day', 'reminders'], (items) =>
-      resolve({ day: items.day as number, reminders: items.reminders as Reminders }),
-    ),
-  )
+  const stored = await _store.load('day', 'reminders')
 
-  _reminders = (reminders || []).sort((a, b) => a.day - b.day)
-  _day = Number(day) || 1
+  _reminders = (stored.reminders || []).sort((a, b) => a.day - b.day)
+  _day = Number(stored.day) || 1
 
   topBarRightContainer.prepend(createTimeTracker())
 }
@@ -56,7 +57,7 @@ function createTimeTracker() {
       days.value = '1'
     }
 
-    changeInGameDay(day)
+    void changeInGameDay(day)
   })
 
   const reminderButton = document.createElement('button')
@@ -89,13 +90,14 @@ function createReminderPopup() {
     const day = dayInput.value
     const text = textInput.value
 
-    const error = addReminder(day, text)
-    if (error) {
-      alert(error)
-    }
-
-    dayInput.value = ''
-    textInput.value = ''
+    addReminder(day, text)
+      .then(() => {
+        dayInput.value = ''
+        textInput.value = ''
+      })
+      .catch((error: Error) => {
+        alert(error.message) // TODO: flash message
+      })
   })
 
   const reminders = document.createElement('table')
@@ -134,7 +136,7 @@ function renderReminder(reminder: Reminder) {
   const deleteReminder = document.createElement('button')
   deleteReminder.textContent = '-'
   deleteReminder.addEventListener('click', function () {
-    removeReminder(reminder)
+    void removeReminder(reminder)
   })
   reminderActions.appendChild(deleteReminder)
 
@@ -176,29 +178,29 @@ function hideReminderPopup() {
   document.getElementById('overlay')!.remove() // TODO: only remove if it exists
 }
 
-function addReminder(dayString: string, text: string): void | string {
+async function addReminder(dayString: string, text: string): Promise<void> {
   if (!text) {
-    return 'Please provide a reminder text.'
+    throw new Error('Please provide a reminder text.')
   }
 
   if (!_dayPattern.test(dayString)) {
-    return 'Please provide a day, optionally prefixed with a + sign.'
+    throw new Error('Please provide a day, optionally prefixed with a + sign.')
   }
 
   const day = dayString.startsWith('+') ? _day + Number(dayString.substr(1)) : Number(dayString)
 
   if (_reminders.some((reminder) => reminder.day === day && reminder.text === text)) {
-    return 'That reminder already exists.'
+    throw new Error('That reminder already exists.')
   }
 
-  _reminders.push({ day, text })
+  _reminders.push({day, text})
   _reminders = _reminders.sort((a, b) => a.day - b.day)
 
   renderReminders()
-  saveReminders()
+  await saveReminders()
 }
 
-function removeReminder(reminder: Reminder) {
+async function removeReminder(reminder: Reminder) {
   const index = _reminders.indexOf(reminder)
   if (index === -1) {
     return
@@ -207,17 +209,17 @@ function removeReminder(reminder: Reminder) {
   _reminders.splice(index, 1)
 
   renderReminders()
-  saveReminders()
+  await saveReminders()
 }
 
-function changeInGameDay(day: number) {
+async function changeInGameDay(day: number) {
   _day = day
-  chrome.storage.sync.set({ day })
+  await _store.save('day', day)
 
-  checkReminders()
+  await checkReminders()
 }
 
-function checkReminders() {
+async function checkReminders() {
   const reminders = _reminders.filter((reminder) => reminder.day <= _day)
 
   for (const reminder of reminders) {
@@ -227,11 +229,11 @@ function checkReminders() {
 
   renderReminders()
 
-  saveReminders()
+  await saveReminders()
 }
 
-function saveReminders() {
-  chrome.storage.sync.set({ reminders: _reminders })
+async function saveReminders() {
+  await _store.save('reminders', _reminders)
 }
 
 void run()
