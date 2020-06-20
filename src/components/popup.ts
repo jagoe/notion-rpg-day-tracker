@@ -1,6 +1,7 @@
 import {Reminder, Reminders} from '../reminders'
 
-export class Popup extends HTMLDivElement {
+export class Popup {
+  private _popup: HTMLDivElement
   private _dayInput: HTMLInputElement
   private _textInput: HTMLInputElement
   private _addButton: HTMLButtonElement
@@ -8,25 +9,28 @@ export class Popup extends HTMLDivElement {
   private _overlay: HTMLDivElement | null = null
 
   public constructor(private _reminders: Reminders) {
-    super()
-
     this._dayInput = this._buildDayInput()
     this._textInput = this._buildTextInput()
     this._addButton = this._buildAddButton()
     this._remindersTable = this._buildRemindersTable()
 
-    this.renderReminders(this._reminders.openReminders)
+    void this._reminders.initialized.then(() => {
+      this.renderReminders(this._reminders.openReminders)
+    })
 
-    this._buildPopup()
+    this._popup = this._buildPopup()
   }
 
   private _buildPopup() {
-    this.classList.add('reminder-popup')
+    const popup = document.createElement('div')
+    popup.classList.add('reminder-popup') // TODO: make it look like the other popups
 
-    this.appendChild(this._dayInput)
-    this.appendChild(this._textInput)
-    this.appendChild(this._addButton)
-    this.appendChild(this._remindersTable)
+    popup.appendChild(this._dayInput)
+    popup.appendChild(this._textInput)
+    popup.appendChild(this._addButton)
+    popup.appendChild(this._remindersTable)
+
+    return popup
   }
 
   private _buildDayInput() {
@@ -115,7 +119,13 @@ export class Popup extends HTMLDivElement {
     overlay.style.width = '100%'
     overlay.style.height = '100%'
     overlay.addEventListener('click', () => this.hideReminderPopup())
-    this.parentElement!.prepend(overlay)
+    this._popup.parentElement!.prepend(overlay)
+
+    return overlay
+  }
+
+  public append(parent: HTMLElement): void {
+    parent.appendChild(this._popup)
   }
 
   public renderReminders(reminders: Array<Reminder>): void {
@@ -127,7 +137,7 @@ export class Popup extends HTMLDivElement {
   }
 
   public toggle(): void {
-    if (this.classList.contains('show')) {
+    if (this._popup.classList.contains('show')) {
       this.hideReminderPopup()
     } else {
       this.showReminderPopup()
@@ -135,12 +145,15 @@ export class Popup extends HTMLDivElement {
   }
 
   public showReminderPopup(): void {
-    this.classList.add('show')
-    this._insertOverlay()
+    this._popup.classList.add('show')
+    this._overlay = this._insertOverlay()
   }
 
   public hideReminderPopup(): void {
-    this.classList.remove('show')
-    if (this._overlay) this._overlay.remove()
+    this._popup.classList.remove('show')
+    if (this._overlay) {
+      this._overlay.remove()
+      this._overlay = null
+    }
   }
 }

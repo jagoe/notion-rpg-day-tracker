@@ -18,7 +18,7 @@ function setupEventListeners() {
     _popup.renderReminders(reminders)
   })
   _reminders.on('reminder', (reminder) => {
-    alert(`Day ${reminder.day}: ${reminder.text}`) // TODO: display properly as a toast or whatever
+    alert(`Day ${reminder.day}: ${reminder.text}`) // TODO: use toast or whatever
   })
 }
 
@@ -66,7 +66,7 @@ function createTimeTracker() {
   timeTracker.appendChild(label)
   timeTracker.appendChild(days)
   timeTracker.appendChild(reminderButton)
-  timeTracker.appendChild(_popup)
+  _popup.append(timeTracker)
 
   return timeTracker
 }
