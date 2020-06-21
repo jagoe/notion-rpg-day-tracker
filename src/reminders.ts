@@ -65,7 +65,7 @@ export class Reminders extends EventEmitter<ReminderEvents> {
     this._reminders.push(reminder)
     this._sortReminders()
 
-    this._emit('update', this.openReminders) // TODO: send all reminders for re-render?
+    this._emit('update', this.openReminders)
     await this._saveReminders()
   }
 
@@ -79,7 +79,7 @@ export class Reminders extends EventEmitter<ReminderEvents> {
 
     this._reminders.splice(index, 1)
 
-    this._emit('update', this.openReminders) // TODO: send all reminders for re-render?
+    this._emit('update', this.openReminders)
     await this._saveReminders()
   }
 
