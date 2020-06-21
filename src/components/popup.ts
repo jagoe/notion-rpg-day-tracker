@@ -7,14 +7,14 @@ export class Popup {
   private _dayInput: HTMLInputElement
   private _textInput: HTMLInputElement
   private _addButton: HTMLButtonElement
-  private _remindersTable: HTMLTableElement
+  private _remindersList: HTMLUListElement
   private _overlay: HTMLDivElement | null = null
 
   public constructor(private _reminders: Reminders) {
     this._dayInput = this._buildDayInput()
     this._textInput = this._buildTextInput()
     this._addButton = this._buildAddButton()
-    this._remindersTable = this._buildRemindersTable()
+    this._remindersList = this._buildRemindersList()
 
     void this._reminders.initialized.then(() => {
       this._renderReminders(this._reminders.openReminders)
@@ -34,7 +34,7 @@ export class Popup {
     popup.appendChild(this._textInput)
     popup.appendChild(this._addButton)
     popup.appendChild(document.createElement('hr'))
-    popup.appendChild(this._remindersTable)
+    popup.appendChild(this._remindersList)
 
     return popup
   }
@@ -83,23 +83,31 @@ export class Popup {
     this._textInput.value = ''
   }
 
-  private _buildRemindersTable() {
-    const table = document.createElement('table')
-    table.classList.add('reminders')
+  private _buildRemindersList() {
+    const list = document.createElement('ul')
+    list.classList.add('reminders')
 
-    return table
+    return list
   }
 
-  private _buildReminderRow(reminder: Reminder) {
-    const row = document.createElement('tr')
+  private _renderReminders(reminders: Array<Reminder>): void {
+    this._remindersList.innerHTML = ''
 
-    const reminderDay = document.createElement('td')
+    for (const reminder of reminders) {
+      this._remindersList.appendChild(this._buildReminderEntry(reminder))
+    }
+  }
+
+  private _buildReminderEntry(reminder: Reminder) {
+    const item = document.createElement('li')
+
+    const reminderDay = document.createElement('span')
     reminderDay.textContent = reminder.day.toString()
 
-    const reminderText = document.createElement('td')
+    const reminderText = document.createElement('span')
     reminderText.textContent = reminder.text
 
-    const reminderActions = document.createElement('td')
+    const reminderActions = document.createElement('span')
     const deleteReminder = document.createElement('button')
     deleteReminder.textContent = '–'
     deleteReminder.addEventListener('click', () => {
@@ -109,11 +117,11 @@ export class Popup {
     })
     reminderActions.appendChild(deleteReminder)
 
-    row.appendChild(reminderDay)
-    row.appendChild(reminderText)
-    row.appendChild(reminderActions)
+    item.appendChild(reminderDay)
+    item.appendChild(reminderText)
+    item.appendChild(reminderActions)
 
-    return row
+    return item
   }
 
   private _insertOverlay() {
@@ -128,14 +136,6 @@ export class Popup {
     this._popup.parentElement!.prepend(overlay)
 
     return overlay
-  }
-
-  private _renderReminders(reminders: Array<Reminder>): void {
-    this._remindersTable.innerHTML = ''
-
-    for (const reminder of reminders) {
-      this._remindersTable.appendChild(this._buildReminderRow(reminder))
-    }
   }
 
   public append(parent: HTMLElement): void {
