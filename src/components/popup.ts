@@ -1,3 +1,4 @@
+import {KeyCode} from '../keyCode'
 import {Reminder, Reminders} from '../reminders'
 
 export class Popup {
@@ -15,7 +16,10 @@ export class Popup {
     this._remindersTable = this._buildRemindersTable()
 
     void this._reminders.initialized.then(() => {
-      this.renderReminders(this._reminders.openReminders)
+      this._renderReminders(this._reminders.openReminders)
+    })
+    _reminders.on('update', (reminders) => {
+      this._renderReminders(reminders)
     })
 
     this._popup = this._buildPopup()
@@ -64,7 +68,7 @@ export class Popup {
   }
 
   private async _addNewReminder(event?: KeyboardEvent) {
-    if (event && event.keyCode !== 13) return
+    if (event && event.keyCode !== KeyCode.Enter) return
 
     const day = this._dayInput.value
     const text = this._textInput.value
@@ -124,16 +128,16 @@ export class Popup {
     return overlay
   }
 
-  public append(parent: HTMLElement): void {
-    parent.appendChild(this._popup)
-  }
-
-  public renderReminders(reminders: Array<Reminder>): void {
+  private _renderReminders(reminders: Array<Reminder>): void {
     this._remindersTable.innerHTML = ''
 
     for (const reminder of reminders) {
       this._remindersTable.appendChild(this._buildReminderRow(reminder))
     }
+  }
+
+  public append(parent: HTMLElement): void {
+    parent.appendChild(this._popup)
   }
 
   public toggle(): void {
