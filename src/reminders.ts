@@ -42,7 +42,7 @@ export class Reminders extends EventEmitter<ReminderEvents> {
   }
 
   public get openReminders(): Array<Reminder> {
-    return this._reminders.map((reminder) => ({...reminder}))
+    return this._reminders.filter((reminder) => reminder.day > this._currentDay).map((reminder) => ({...reminder}))
   }
 
   private _dayPattern = /^\+?\d+$/
@@ -87,20 +87,17 @@ export class Reminders extends EventEmitter<ReminderEvents> {
     this._currentDay = day
     await this._store.save('day', day)
 
-    await this._checkReminders()
+    this._checkReminders()
   }
 
-  private async _checkReminders() {
-    const dueReminders = this._reminders.filter((reminder) => reminder.day <= this._currentDay)
+  private _checkReminders() {
+    const dueReminders = this._reminders.filter((reminder) => reminder.day === this._currentDay)
 
     for (const reminder of dueReminders) {
-      this._reminders.splice(this._reminders.indexOf(reminder), 1)
       this._emit('reminder', reminder)
     }
 
     this._emit('update', this.openReminders)
-
-    await this._saveReminders()
   }
 
   private async _saveReminders() {
