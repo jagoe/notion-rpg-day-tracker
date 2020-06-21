@@ -1,5 +1,5 @@
-import {EventEmitter} from './eventEmitter'
 import {Store} from './store'
+import {EventEmitter} from './util/eventEmitter'
 
 export interface Reminder {
   day: number

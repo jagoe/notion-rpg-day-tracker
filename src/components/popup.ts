@@ -1,5 +1,6 @@
-import {KeyCode} from '../keyCode'
 import {Reminder, Reminders} from '../reminders'
+import {KeyCode} from '../util/keyCode'
+import {FlashMessageService} from './flashMessageService'
 
 export class Popup {
   private _popup: HTMLDivElement
@@ -74,7 +75,7 @@ export class Popup {
     const text = this._textInput.value
 
     await this._reminders.add(day, text).catch((error: Error) => {
-      alert(error.message) // TODO: use flash message
+      FlashMessageService.error(error.message)
     })
 
     this._dayInput.value = ''
@@ -102,7 +103,7 @@ export class Popup {
     deleteReminder.textContent = '-'
     deleteReminder.addEventListener('click', () => {
       void this._reminders.remove(reminder).catch((error: Error) => {
-        alert(error.message) // TODO: use flash bar
+        FlashMessageService.error(error.message)
       })
     })
     reminderActions.appendChild(deleteReminder)
