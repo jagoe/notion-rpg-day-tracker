@@ -6,17 +6,39 @@
   margin: 0 2px;
 }
 
-.time-tracker input,
+.time-tracker input {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 4px 0px 4px 10px;
+  position: relative;
+  border: 0;
+  border-radius: 3px;
+  box-shadow: rgba(15, 15, 15, 0.2) 0px 0px 0px 1px inset, rgba(15, 15, 15, 0.2) 0px 1px 1px inset;
+  background: rgba(15, 15, 15, 0.3);
+}
+
 .time-tracker button {
-  background-color: transparent;
+  border: 0;
+  background: transparent;
+  font-weight: bold;
+  font-size: large;
+}
+
+.time-tracker hr {
+  border: 0;
+  height: 1px;
+  margin-top: 10px;
+  margin-bottom: 0px;
+  box-shadow: rgba(255, 255, 255, 0.07) 0px -1px 0px 0px;
 }
 
 #time-tracker-days {
   width: 5em;
   height: 24px;
+  margin-right: 5px;
 }
 
-.reminders-toggle {
+button.reminders-toggle {
   position: relative;
   top: 3px;
   height: 20px;
@@ -34,16 +56,18 @@
 
 .reminder-popup {
   position: fixed;
-  height: 240px;
-  width: 350px;
   display: none;
   visibility: hidden;
-}
-
-.reminder-popup button {
-  border: 0;
-  font-weight: bold;
-  font-size: large;
+  min-height: 240px;
+  width: 400px;
+  right: 20px;
+  padding: 5px;
+  margin-top: 10px;
+  max-width: calc(100vw - 24px);
+  border-radius: 3px;
+  background: rgb(63, 68, 71);
+  box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.2) 0px 3px 6px,
+    rgba(15, 15, 15, 0.4) 0px 9px 24px;
 }
 
 .reminder-popup.show {
@@ -51,15 +75,13 @@
   visibility: visible;
 }
 
-/* TODO: use flex or grid for this row */
 input.new-reminder-day {
   width: 60px;
   margin-right: 5px;
 }
 
 input.new-reminder-text {
-  width: 250px;
-  margin-right: 5px;
+  width: 305px;
 }
 
 button.add-reminder {
@@ -68,12 +90,26 @@ button.add-reminder {
 }
 
 table.reminders {
-  /* TODO: maybe use flex/grid for this as well */
   width: 100%;
 }
 
 .reminders td {
-  padding: 2px;
+  padding: 5px;
+}
+
+.reminders td:first-of-type {
+  width: 70px;
+  padding-left: 10px;
+}
+
+.reminders tr > td:last-of-type {
+  width: 30px;
+  padding: 0;
+}
+
+.reminders tr > td:last-of-type > button {
+  position: relative;
+  left: 12px;
 }
 
 ul.time-tracker-message-bar {

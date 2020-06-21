@@ -33,6 +33,7 @@ export class Popup {
     popup.appendChild(this._dayInput)
     popup.appendChild(this._textInput)
     popup.appendChild(this._addButton)
+    popup.appendChild(document.createElement('hr'))
     popup.appendChild(this._remindersTable)
 
     return popup
