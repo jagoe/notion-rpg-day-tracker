@@ -43,6 +43,7 @@ export class FlashMessageService {
     const messageElement = document.createElement('li')
     messageElement.classList.add(type, 'out')
     messageElement.textContent = message
+    messageElement.style.zIndex = `${1000 - FlashMessageService._messageBar.childElementCount}`
 
     const close = () => {
       messageElement.classList.add('out')
