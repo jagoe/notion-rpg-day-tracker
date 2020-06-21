@@ -8,13 +8,11 @@ export class TimeTracker {
   public constructor(private _reminders: Reminders) {
     this._popup = new Popup(_reminders)
     this._timeTracker = this._buildTimeTracker()
+    this._trapEvents()
   }
 
   private _buildTimeTracker() {
     const timeTracker = document.createElement('div')
-    timeTracker.addEventListener('keydown', (event) => {
-      event.stopImmediatePropagation()
-    })
     timeTracker.classList.add('time-tracker')
 
     const {label, input} = this._buildDayInput()
@@ -58,6 +56,27 @@ export class TimeTracker {
     })
 
     return button
+  }
+
+  private _trapEvents() {
+    this._timeTracker.addEventListener('keydown', (event) => {
+      event.stopImmediatePropagation()
+    })
+    this._timeTracker.addEventListener('keyup', (event) => {
+      event.stopImmediatePropagation()
+    })
+    this._timeTracker.addEventListener('keypress', (event) => {
+      event.stopImmediatePropagation()
+    })
+    this._timeTracker.addEventListener('copy', (event) => {
+      event.stopImmediatePropagation()
+    })
+    this._timeTracker.addEventListener('cut', (event) => {
+      event.stopImmediatePropagation()
+    })
+    this._timeTracker.addEventListener('paste', (event) => {
+      event.stopImmediatePropagation()
+    })
   }
 
   public prepend(parent: Element): void {
