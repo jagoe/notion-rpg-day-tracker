@@ -40,6 +40,12 @@
   visibility: hidden;
 }
 
+.reminder-popup button {
+  border: 0;
+  font-weight: bold;
+  font-size: large;
+}
+
 .reminder-popup.show {
   display: block;
   visibility: visible;

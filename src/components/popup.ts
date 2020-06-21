@@ -100,7 +100,7 @@ export class Popup {
 
     const reminderActions = document.createElement('td')
     const deleteReminder = document.createElement('button')
-    deleteReminder.textContent = '-'
+    deleteReminder.textContent = '–'
     deleteReminder.addEventListener('click', () => {
       void this._reminders.remove(reminder).catch((error: Error) => {
         FlashMessageService.error(error.message)
