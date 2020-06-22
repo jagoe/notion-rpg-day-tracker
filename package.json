@@ -1,6 +1,6 @@
 {
   "name": "notion-rpg-time-tracker",
-  "version": "0.1",
+  "version": "0.2",
   "description": "A Chrome extension that adds a day tracker and reminders to the fabulous notion.so",
   "main": "dist/index.js",
   "repository": "git@github.com:jagoe/notion-rpg-time-tracker.git",
