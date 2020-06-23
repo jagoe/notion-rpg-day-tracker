@@ -13,7 +13,7 @@ export class TimeTracker {
 
   private _buildTimeTracker() {
     const timeTracker = document.createElement('div')
-    timeTracker.classList.add('time-tracker')
+    timeTracker.classList.add('time-tracker', this._getTheme())
 
     const {label, input} = this._buildDayInput()
     timeTracker.appendChild(label)
@@ -77,6 +77,10 @@ export class TimeTracker {
     this._timeTracker.addEventListener('paste', (event) => {
       event.stopImmediatePropagation()
     })
+  }
+
+  private _getTheme() {
+    return document.body.classList.contains('dark') ? 'dark' : 'light'
   }
 
   public prepend(parent: Element): void {

@@ -176,3 +176,11 @@ ul.time-tracker-message-bar > li > button {
 ul.time-tracker-message-bar > li > button:hover {
   color: #cccccc;
 }
+
+.time-tracker.light input {
+  background: rgba(242, 241, 238, 0.6);
+}
+
+.time-tracker.light .reminder-popup {
+  background: #ffffff;
+}
