@@ -4,6 +4,7 @@ import {EventEmitter} from './util/eventEmitter'
 export interface Reminder {
   day: number
   text: string
+  closed: boolean
 }
 
 interface ReminderStore {
@@ -43,7 +44,7 @@ export class Reminders extends EventEmitter<ReminderEvents> {
   }
 
   public get openReminders(): Array<Reminder> {
-    return this._reminders.filter((reminder) => reminder.day > this._currentDay).map((reminder) => ({...reminder}))
+    return this._reminders.filter((reminder) => !reminder.closed).map((reminder) => ({...reminder}))
   }
 
   private _dayPattern = /^\+?\d+$/
@@ -62,7 +63,7 @@ export class Reminders extends EventEmitter<ReminderEvents> {
       throw new Error('That reminder already exists.')
     }
 
-    const reminder = {day, text}
+    const reminder = {day, text, closed: false}
     this._reminders.push(reminder)
     this._sortReminders()
 
@@ -88,17 +89,29 @@ export class Reminders extends EventEmitter<ReminderEvents> {
     this._currentDay = day
     await this._store.save('day', day)
 
-    this._checkReminders()
+    await this._checkReminders()
+    await this._reopenReminders()
   }
 
-  private _checkReminders() {
-    const dueReminders = this._reminders.filter((reminder) => reminder.day === this._currentDay)
+  private async _checkReminders() {
+    const dueReminders = this._reminders.filter((reminder) => reminder.day <= this._currentDay)
 
     for (const reminder of dueReminders) {
       this._emit('reminder', reminder)
+      reminder.closed = true
     }
 
     this._emit('update', this.openReminders)
+    await this._saveReminders()
+  }
+
+  private async _reopenReminders() {
+    this._reminders
+      .filter((reminder) => reminder.closed && reminder.day > this._currentDay)
+      .forEach((reminder) => (reminder.closed = false))
+
+    this._emit('update', this.openReminders)
+    await this._saveReminders()
   }
 
   private async _saveReminders() {
