@@ -17,15 +17,16 @@ interface ReminderEvents {
 }
 
 export class Reminders extends EventEmitter<ReminderEvents> {
-  private _store = new Store<ReminderStore>()
+  private _store: Store<ReminderStore>
   private _reminders: Array<Reminder> = []
   private _currentDay: number = 0
 
   public initialized: Promise<void>
 
-  public constructor() {
+  public constructor(workspace: string) {
     super()
 
+    this._store = new Store(workspace)
     this.initialized = new Promise((resolve) => {
       void this._store.load('day', 'reminders').then((stored) => {
         this._currentDay = stored.day || 1

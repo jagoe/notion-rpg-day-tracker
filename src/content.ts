@@ -1,12 +1,14 @@
 import {FlashMessageService} from './components/flashMessageService'
 import {TimeTracker} from './components/timeTracker'
 import {Reminders} from './reminders'
+import {getCurrentWorkspace} from './util/getCurrentWorkspace'
 import {waitFor} from './util/waitFor'
 
 async function run() {
   const topBarRightContainer = await waitFor('.notion-topbar > div > div:last-of-type')
+  const currentWorkspace = await getCurrentWorkspace()
 
-  const reminders = new Reminders()
+  const reminders = new Reminders(currentWorkspace)
   await reminders.initialized
   const timeTracker = new TimeTracker(reminders)
 
