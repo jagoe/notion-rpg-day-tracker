@@ -23,11 +23,7 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [
-        {from: 'styles', to: 'styles'},
-        {from: 'images', to: 'images'},
-        {from: 'manifest.json', to: 'manifest.json'},
-      ],
+      patterns: [{from: 'static', to: './'}],
     }),
   ],
   resolve: {
