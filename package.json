@@ -10,11 +10,10 @@
   "scripts": {
     "clean:build": "rm -rf dist/*",
     "clean:release": "rm -rf release/*",
-    "prebuild": "yarn clean:build",
     "build": "yarn build:dev",
-    "build:dev": "NODE_ENV=development webpack",
-    "build:prod": "NODE_ENV=production webpack",
-    "lint": "eslint 'extension/src/**/*.ts' --fix --format codeframe",
+    "build:dev": "yarn clean:build && webpack --config webpack.dev.js",
+    "build:prod": "yarn clean:build && webpack --config webpack.prod.js",
+    "lint": "eslint 'src/**/*.ts' --fix --format codeframe",
     "prerelease": "yarn clean:release && yarn build:prod",
     "release": "7z a -r0 -tzip ./release/notion-rpg-day-tracker.$(jq -r '.version' < ./package.json).zip ./dist/*"
   },

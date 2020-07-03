@@ -1,17 +1,22 @@
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
-const mode = process.env.NODE_ENV
-const devMode = mode === 'development'
 
 module.exports = {
-  entry: './src/content.ts',
-  mode,
-  devtool: devMode ? 'inline-source-map' : '',
+  entry: {
+    content: './src/content/content.ts',
+  },
   module: {
     rules: [
       {
         test: /\.ts$/,
-        use: 'ts-loader',
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: 'tsconfig.json',
+            },
+          },
+        ],
         exclude: /node_modules/,
       },
     ],
@@ -29,7 +34,7 @@ module.exports = {
     extensions: ['.ts'],
   },
   output: {
-    filename: 'content.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
 }
