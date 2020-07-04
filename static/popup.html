@@ -6,7 +6,22 @@
 </head>
 
 <body>
-  <span id="test"></span>
+  <div id="loading">Loading...</div>
+  <div id="anonymous-section" class="hidden">
+    <input type="email" id="email" placeholder="Email" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
+    <div id="registration-section" class="hidden">
+      <input type="password" id="password-confirmation" placeholder="Confirm password" /><br />
+      <button type="button" id="register">Register</button> or <a href="#" id="switch-login">Login</a>
+    </div>
+    <div id="login-section">
+      <button type="button" id="login">Login</button> or <a href="#" id="switch-registration">Register</a>
+    </div>
+  </div>
+  <div id="user-section" class="hidden">
+    <button type="button" id="logout">Logout</button>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 

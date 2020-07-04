@@ -17,6 +17,9 @@
     "prerelease": "yarn clean:release && yarn build:prod",
     "release": "7z a -r0 -tzip ./release/notion-rpg-day-tracker.$(jq -r '.version' < ./package.json).zip ./dist/*"
   },
+  "dependencies": {
+    "firebase": "^7.15.5"
+  },
   "devDependencies": {
     "@avenga/eslint-config": "^1.1.0",
     "@types/chrome": "^0.0.116",
