@@ -18,8 +18,11 @@
 }
 
 .time-tracker button {
-  border: 0;
   background: transparent;
+}
+
+.time-tracker button.text {
+  border: 0;
   font-weight: bold;
   font-size: large;
 }
@@ -32,13 +35,13 @@
   box-shadow: rgba(255, 255, 255, 0.07) 0px -1px 0px 0px;
 }
 
-#time-tracker-days {
+#tt-days {
   width: 5em;
   height: 24px;
   margin-right: 5px;
 }
 
-button.reminders-toggle {
+button.tt-reminders-toggle {
   position: relative;
   top: 3px;
   height: 20px;
@@ -49,12 +52,12 @@ button.reminders-toggle {
   border: 0;
 }
 
-.reminders-toggle:hover {
+.tt-reminders-toggle:hover {
   background-color: rgb(71, 76, 80);
   border-radius: 2px;
 }
 
-.reminder-popup {
+.tt-popup {
   position: fixed;
   display: none;
   visibility: hidden;
@@ -70,61 +73,61 @@ button.reminders-toggle {
     rgba(15, 15, 15, 0.4) 0px 9px 24px;
 }
 
-.reminder-popup.show {
+.tt-popup.show {
   display: block;
   visibility: visible;
 }
 
-input.new-reminder-day {
+input.tt-new-reminder-day {
   width: 60px;
   margin-right: 5px;
 }
 
-input.new-reminder-text {
+input.tt-new-reminder-text {
   width: 305px;
 }
 
-button.add-reminder {
+button.tt-add-reminder {
   position: absolute;
   right: 0;
 }
 
-ul.reminders {
+ul.tt-reminders {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 /* TODO: These should less randomly match the line they are meant to match (i.e. same padding as the inputs, etc.) */
-ul.reminders > li {
+ul.tt-reminders > li {
   display: flex;
   justify-content: flex-start;
   padding: 5px;
 }
 
-.reminders > li span:nth-of-type(2) {
+.tt-reminders > li span:nth-of-type(2) {
   width: 100%;
   padding-left: 15px;
   align-self: flex-start;
 }
 
-.reminders > li span:first-of-type {
+.tt-reminders > li span:first-of-type {
   width: 70px;
   padding-left: 5px;
 }
 
-.reminders > li span:last-of-type {
+.tt-reminders > li span:last-of-type {
   width: 30px;
   margin-right: 2px;
 }
 
-.reminders > li span:last-of-type > button {
+.tt-reminders > li span:last-of-type > button {
   position: relative;
   left: 12px;
   line-height: 0;
 }
 
-ul.time-tracker-message-bar {
+ul.tt-message-bar {
   position: absolute;
   left: 0;
   top: 0;
@@ -135,7 +138,7 @@ ul.time-tracker-message-bar {
   padding: 0;
 }
 
-ul.time-tracker-message-bar > li {
+ul.tt-message-bar > li {
   position: relative;
   padding: 5px;
   padding-left: 15px;
@@ -145,23 +148,23 @@ ul.time-tracker-message-bar > li {
   transition: transform ease-in 200ms;
 }
 
-ul.time-tracker-message-bar > li.out {
+ul.tt-message-bar > li.out {
   transform: translateY(-45px);
 }
 
-ul.time-tracker-message-bar > li.error {
+ul.tt-message-bar > li.error {
   background-color: darkred;
 }
 
-ul.time-tracker-message-bar > li.warning {
+ul.tt-message-bar > li.warning {
   background-color: darkgoldenrod;
 }
 
-ul.time-tracker-message-bar > li.info {
+ul.tt-message-bar > li.info {
   background-color: darkcyan;
 }
 
-ul.time-tracker-message-bar > li > button {
+ul.tt-message-bar > li > button {
   height: 35px;
   width: 35px;
   float: right;
@@ -173,7 +176,7 @@ ul.time-tracker-message-bar > li > button {
   transition: transform ease-in 200ms;
 }
 
-ul.time-tracker-message-bar > li > button:hover {
+ul.tt-message-bar > li > button:hover {
   color: #cccccc;
 }
 
@@ -181,6 +184,10 @@ ul.time-tracker-message-bar > li > button:hover {
   background: rgba(242, 241, 238, 0.6);
 }
 
-.time-tracker.light .reminder-popup {
+.time-tracker.light .tt-popup {
   background: #ffffff;
+}
+
+.hidden {
+  display: none;
 }

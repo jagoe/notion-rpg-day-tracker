@@ -1,16 +1,6 @@
-import {Store} from './store'
+import {ReminderStore} from './store'
 import {EventEmitter} from './util/eventEmitter'
-
-export interface Reminder {
-  day: number
-  text: string
-  closed: boolean
-}
-
-interface ReminderStore {
-  day: number
-  reminders: Array<Reminder>
-}
+import {Reminder} from './models'
 
 interface ReminderEvents {
   reminder: Reminder
@@ -18,33 +8,27 @@ interface ReminderEvents {
 }
 
 export class Reminders extends EventEmitter<ReminderEvents> {
-  private _store: Store<ReminderStore>
-  private _reminders: Array<Reminder> = []
-  private _currentDay: number = 0
+  private _store: ReminderStore
 
   public initialized: Promise<void>
 
   public constructor(workspace: string) {
     super()
 
-    this._store = new Store(workspace)
-    this.initialized = new Promise((resolve) => {
-      void this._store.load('day', 'reminders').then((stored) => {
-        this._currentDay = stored.day || 1
-        this._reminders = stored.reminders || []
-        this._sortReminders()
+    this._store = new ReminderStore(workspace)
 
-        resolve()
-      })
+    this.initialized = new Promise((resolve) => {
+      void this._store.initialized.then(resolve)
     })
   }
 
   public get currentDay(): number {
-    return this._currentDay
+    return this._store.day
   }
 
   public get openReminders(): Array<Reminder> {
-    return this._reminders.filter((reminder) => !reminder.closed).map((reminder) => ({...reminder}))
+    // TODO: filter in store
+    return this._store.reminders.filter((reminder) => !reminder.closed).map((reminder) => ({...reminder}))
   }
 
   private _dayPattern = /^\+?\d+$/
@@ -57,68 +41,55 @@ export class Reminders extends EventEmitter<ReminderEvents> {
       throw new Error('Please provide a day, optionally prefixed with a + sign.')
     }
 
-    const day = dayString.startsWith('+') ? this._currentDay + Number(dayString.substr(1)) : Number(dayString)
+    const day = dayString.startsWith('+') ? this._store.day + Number(dayString.substr(1)) : Number(dayString)
 
-    if (this._reminders.some((existingReminder) => existingReminder.day === day && existingReminder.text === text)) {
+    if (
+      this._store.reminders.some((existingReminder) => existingReminder.day === day && existingReminder.text === text)
+    ) {
       throw new Error('That reminder already exists.')
     }
 
     const reminder = {day, text, closed: false}
-    this._reminders.push(reminder)
-    this._sortReminders()
+    await this._store.addReminder(reminder)
 
     this._emit('update', this.openReminders)
-    await this._saveReminders()
   }
 
   public async remove(reminder: Reminder): Promise<void> {
-    const index = this._reminders.findIndex(
-      (existing) => existing.day === reminder.day && existing.text === reminder.text,
-    )
-    if (index === -1) {
-      throw new Error(`Could not find reminder 'Day ${reminder.day}: ${reminder.text}'`)
-    }
-
-    this._reminders.splice(index, 1)
+    await this._store.removeReminder(reminder)
 
     this._emit('update', this.openReminders)
-    await this._saveReminders()
   }
 
   public async changeDay(day: number): Promise<void> {
-    this._currentDay = day
-    await this._store.save('day', day)
+    await this._store.setDay(day)
 
     await this._checkReminders()
     await this._reopenReminders()
   }
 
   private async _checkReminders() {
-    const dueReminders = this._reminders.filter((reminder) => reminder.day <= this._currentDay)
+    const dueReminders = this._store.reminders.filter((reminder) => reminder.day <= this._store.day)
 
     for (const reminder of dueReminders) {
       this._emit('reminder', reminder)
       reminder.closed = true
+      await this._store.updateReminder(reminder)
     }
 
     this._emit('update', this.openReminders)
-    await this._saveReminders()
   }
 
   private async _reopenReminders() {
-    this._reminders
-      .filter((reminder) => reminder.closed && reminder.day > this._currentDay)
-      .forEach((reminder) => (reminder.closed = false))
+    const reopenedReminders = this._store.reminders.filter(
+      (reminder) => reminder.closed && reminder.day > this._store.day,
+    )
+
+    for (const reminder of reopenedReminders) {
+      reminder.closed = false
+      await this._store.updateReminder(reminder)
+    }
 
     this._emit('update', this.openReminders)
-    await this._saveReminders()
-  }
-
-  private async _saveReminders() {
-    await this._store.save('reminders', this._reminders)
-  }
-
-  private _sortReminders() {
-    this._reminders = this._reminders.sort((a, b) => a.day - b.day)
   }
 }

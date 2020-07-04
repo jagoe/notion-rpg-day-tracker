@@ -16,7 +16,7 @@ const DEFAULT_OPTIONS: FlashMessageOptions = {persist: false, timeout: 5000}
 export class FlashMessageService {
   private static _messageBar = (() => {
     const bar = document.createElement('ul')
-    bar.classList.add('time-tracker-message-bar')
+    bar.classList.add('tt-message-bar')
 
     void waitFor('.notion-topbar').then((topbar) => {
       const parent = topbar.parentElement!

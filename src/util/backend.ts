@@ -4,7 +4,15 @@ import 'firebase/firestore'
 import {firebaseConfig} from './firebase.config'
 
 firebase.initializeApp(firebaseConfig)
-// TODO: hoist this file up, so popup and extension can use fb → separate module in webpack
+
+let _isLoggedIn: boolean | null = null
+firebase.auth().onAuthStateChanged((user) => {
+  _isLoggedIn = !!user
+})
+
+export function isLoggedIn(): boolean | null {
+  return _isLoggedIn
+}
 
 export function onLogin(fn: (user: firebase.User) => void): void {
   firebase.auth().onAuthStateChanged((user) => {

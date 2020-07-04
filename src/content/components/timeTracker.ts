@@ -1,12 +1,16 @@
 import {Reminders} from '../reminders'
-import {Popup} from './popup'
+import * as backend from '../../util/backend'
+import {ReminderPopup} from './reminderPopup'
+import {AuthPopup} from './authPopup'
 
 export class TimeTracker {
-  private _popup: Popup
+  private _authPopup: AuthPopup
+  private _reminderPopup: ReminderPopup
   private _timeTracker: HTMLDivElement
 
   public constructor(private _reminders: Reminders) {
-    this._popup = new Popup(_reminders)
+    this._authPopup = new AuthPopup()
+    this._reminderPopup = new ReminderPopup(_reminders)
     this._timeTracker = this._buildTimeTracker()
     this._trapEvents()
   }
@@ -19,19 +23,28 @@ export class TimeTracker {
     timeTracker.appendChild(label)
     timeTracker.appendChild(input)
     timeTracker.appendChild(this._buildPopupButton())
-    this._popup.append(timeTracker)
+    this._authPopup.append(timeTracker)
+    this._reminderPopup.append(timeTracker)
+
+    void this._reminders.initialized.then(() => {
+      input.value = this._reminders.currentDay.toString()
+      label.classList.remove('hidden')
+      input.classList.remove('hidden')
+    })
 
     return timeTracker
   }
 
   private _buildDayInput() {
     const label = document.createElement('label')
-    label.setAttribute('for', 'time-tracker-days')
+    label.classList.add('hidden')
+    label.setAttribute('for', 'tt-days')
     label.textContent = 'Day '
 
     const input = document.createElement('input')
+    input.classList.add('hidden')
     input.type = 'number'
-    input.id = 'time-tracker-days'
+    input.id = 'tt-days'
     input.size = 4
     input.value = this._reminders.currentDay.toString()
     input.addEventListener('change', () => {
@@ -49,10 +62,27 @@ export class TimeTracker {
 
   private _buildPopupButton() {
     const button = document.createElement('button')
-    button.classList.add('reminders-toggle')
+    button.classList.add('tt-reminders-toggle')
     button.addEventListener('click', (event) => {
       event.stopImmediatePropagation()
-      this._popup.toggle()
+
+      const loginState = new Promise<boolean>((resolve) => {
+        let interval: NodeJS.Timeout | null = null
+        const checkLoginState = () => {
+          const isLoggedIn = backend.isLoggedIn()
+          if (isLoggedIn !== null) resolve(isLoggedIn)
+          if (interval) clearInterval(interval)
+        }
+
+        interval = setInterval(checkLoginState, 100)
+      })
+      void loginState.then((isLoggedIn) => {
+        if (isLoggedIn) {
+          this._reminderPopup.toggle()
+        } else {
+          this._authPopup.toggle()
+        }
+      })
     })
 
     return button
