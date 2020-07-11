@@ -69,7 +69,7 @@ export class Reminders extends EventEmitter<ReminderEvents> {
   }
 
   private async _checkReminders() {
-    const dueReminders = this._store.reminders.filter((reminder) => reminder.day <= this._store.day)
+    const dueReminders = this.openReminders.filter((reminder) => reminder.day <= this._store.day)
 
     for (const reminder of dueReminders) {
       this._emit('reminder', reminder)
