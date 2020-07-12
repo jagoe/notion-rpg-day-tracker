@@ -1,4 +1,5 @@
 import * as backend from '../../util/backend'
+import {KeyCode} from '../util/keyCode'
 import {Popup} from './popup'
 
 export class AuthPopup extends Popup {
@@ -26,6 +27,12 @@ export class AuthPopup extends Popup {
       this._submitButton,
       this._toggleLink,
     )
+
+    this._popup.addEventListener('keypress', (event) => {
+      if (event.keyCode !== KeyCode.Enter) return
+
+      this._submitButton.click()
+    })
   }
 
   private _buildEmailInput() {
@@ -62,9 +69,9 @@ export class AuthPopup extends Popup {
       event.preventDefault()
 
       if (this._mode === 'login') {
-        this._login()
+        void this._login()
       } else {
-        this._register()
+        void this._register()
       }
     })
 
@@ -96,7 +103,7 @@ export class AuthPopup extends Popup {
   }
 
   private static EMAIL_PATTERN = /.*?@.*?\..*?/
-  private _register() {
+  private async _register() {
     const email = this._emailInput.value
     const password = this._passwordInput.value
     const passwordConfirmation = this._passwordConfirmationInput.value
@@ -113,13 +120,17 @@ export class AuthPopup extends Popup {
       return
     }
 
-    void backend.register(email, password).then(() => this.hide())
+    await backend.register(email, password)
+    // TODO: display error if failed
+    this.hide()
   }
 
-  private _login() {
+  private async _login() {
     const email = this._emailInput.value
     const password = this._passwordInput.value
 
-    void backend.login(email, password).then(() => this.hide())
+    await backend.login(email, password)
+    // TODO: display error if failed
+    this.hide()
   }
 }
