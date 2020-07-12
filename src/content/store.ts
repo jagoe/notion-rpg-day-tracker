@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app'
 import * as backend from '../util/backend'
 import {Reminder} from './models'
+import {EventEmitter} from './util/eventEmitter'
 
 interface Workspace extends firebase.firestore.DocumentData {
   day: number
@@ -9,7 +10,12 @@ interface Workspace extends firebase.firestore.DocumentData {
 interface WorkspaceDocument extends firebase.firestore.DocumentSnapshot<Workspace> {}
 interface ReminderDocument extends firebase.firestore.QueryDocumentSnapshot<Reminder> {}
 
-export class ReminderStore implements Workspace {
+export interface ReminderStoreEvents {
+  day: number
+  reminders: Array<Reminder>
+}
+
+export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements Workspace {
   // TODO: merge Reminders & ReminderStore
   private _userId: string | null = null
   private _db = firebase.firestore()
@@ -19,6 +25,8 @@ export class ReminderStore implements Workspace {
   public reminders: Array<Reminder> = []
 
   public constructor(private _workspace: string) {
+    super()
+
     this.initialized = new Promise((resolve) => {
       backend.onLogin((user) => {
         this._userId = user.uid
@@ -65,6 +73,8 @@ export class ReminderStore implements Workspace {
     const setDay = (doc: WorkspaceDocument) => {
       const data = doc.data()
       this.day = data?.day || 1
+
+      this._emit('day', this.day)
     }
 
     const ref = this._db.doc(`${this._workspacePath}`)
@@ -78,6 +88,8 @@ export class ReminderStore implements Workspace {
       this.reminders = docs.map((doc) => {
         return {id: doc.id, ...doc.data()}
       })
+
+      this._emit('reminders', this.reminders)
     }
 
     const collection = this._db.collection(`${this._remindersPath}`).orderBy('day', 'asc')

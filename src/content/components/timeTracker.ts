@@ -57,6 +57,16 @@ export class TimeTracker {
       void this._reminders.changeDay(day)
     })
 
+    this._reminders.on('day', (day) => {
+      const current = input.value
+      const newValue = day.toString()
+
+      if (current === newValue) return
+
+      input.value = newValue
+      void this._reminders.changeDay(day)
+    })
+
     return {label, input}
   }
 

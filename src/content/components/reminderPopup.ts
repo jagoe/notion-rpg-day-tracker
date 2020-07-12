@@ -17,11 +17,8 @@ export class ReminderPopup {
     this._addButton = this._buildAddButton()
     this._remindersList = this._buildRemindersList()
 
-    void this._reminders.initialized.then(() => {
-      this._renderReminders(this._reminders.openReminders)
-    })
-    _reminders.on('update', (reminders) => {
-      this._renderReminders(reminders)
+    _reminders.on('reminders', (reminders) => {
+      this._renderReminders(reminders.filter((reminder) => !reminder.closed))
     })
 
     this._popup = this._buildPopup()
