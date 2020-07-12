@@ -1,6 +1,7 @@
 # build output
 /dist
 /release
+**/*.js
 
 # dependencies
 node_modules
