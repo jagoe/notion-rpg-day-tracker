@@ -1,37 +1,31 @@
 import * as backend from '../../util/backend'
+import {Popup} from './popup'
 
-// TODO: extract abstract class Popup
-export class AuthPopup {
-  private _popup: HTMLDivElement
+export class AuthPopup extends Popup {
   private _emailInput: HTMLInputElement
   private _passwordInput: HTMLInputElement
   private _passwordConfirmationInput: HTMLInputElement
   private _submitButton: HTMLButtonElement
   private _toggleLink: HTMLAnchorElement
-  private _overlay: HTMLDivElement | null = null
 
   private _mode: 'login' | 'register' = 'login'
 
   public constructor() {
+    super('auth')
+
     this._emailInput = this._buildEmailInput()
     this._passwordInput = this._buildPassInput()
     this._passwordConfirmationInput = this._buildPassConfirmationInput()
     this._submitButton = this._buildSubmitButton()
     this._toggleLink = this._buildToggleLink()
-    this._popup = this._buildPopup()
-  }
 
-  private _buildPopup() {
-    const popup = document.createElement('div')
-    popup.classList.add('tt-popup', 'tt-popup-auth')
-
-    popup.appendChild(this._emailInput)
-    popup.appendChild(this._passwordInput)
-    popup.appendChild(this._passwordConfirmationInput)
-    popup.appendChild(this._submitButton)
-    popup.appendChild(this._toggleLink)
-
-    return popup
+    this._addChildren(
+      this._emailInput,
+      this._passwordInput,
+      this._passwordConfirmationInput,
+      this._submitButton,
+      this._toggleLink,
+    )
   }
 
   private _buildEmailInput() {
@@ -101,20 +95,6 @@ export class AuthPopup {
     return anchor
   }
 
-  private _insertOverlay() {
-    const overlay = document.createElement('div')
-    overlay.id = 'overlay'
-    overlay.style.position = 'fixed'
-    overlay.style.left = '0'
-    overlay.style.top = '0'
-    overlay.style.width = '100%'
-    overlay.style.height = '100%'
-    overlay.addEventListener('click', () => this.hide())
-    this._popup.parentElement!.prepend(overlay)
-
-    return overlay
-  }
-
   private static EMAIL_PATTERN = /.*?@.*?\..*?/
   private _register() {
     const email = this._emailInput.value
@@ -141,30 +121,5 @@ export class AuthPopup {
     const password = this._passwordInput.value
 
     void backend.login(email, password).then(() => this.hide())
-  }
-
-  public append(parent: HTMLElement): void {
-    parent.appendChild(this._popup)
-  }
-
-  public toggle(): void {
-    if (this._popup.classList.contains('show')) {
-      this.hide()
-    } else {
-      this.show()
-    }
-  }
-
-  public show(): void {
-    this._popup.classList.add('show')
-    this._overlay = this._insertOverlay()
-  }
-
-  public hide(): void {
-    this._popup.classList.remove('show')
-    if (this._overlay) {
-      this._overlay.remove()
-      this._overlay = null
-    }
   }
 }

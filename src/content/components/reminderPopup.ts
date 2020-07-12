@@ -2,16 +2,17 @@ import {Reminders} from '../reminders'
 import {KeyCode} from '../util/keyCode'
 import {Reminder} from '../models'
 import {FlashMessageService} from './flashMessageService'
+import {Popup} from './popup'
 
-export class ReminderPopup {
-  private _popup: HTMLDivElement
+export class ReminderPopup extends Popup {
   private _dayInput: HTMLInputElement
   private _textInput: HTMLInputElement
   private _addButton: HTMLButtonElement
   private _remindersList: HTMLUListElement
-  private _overlay: HTMLDivElement | null = null
 
   public constructor(private _reminders: Reminders) {
+    super('reminders')
+
     this._dayInput = this._buildDayInput()
     this._textInput = this._buildTextInput()
     this._addButton = this._buildAddButton()
@@ -21,20 +22,13 @@ export class ReminderPopup {
       this._renderReminders(reminders.filter((reminder) => !reminder.closed))
     })
 
-    this._popup = this._buildPopup()
-  }
-
-  private _buildPopup() {
-    const popup = document.createElement('div')
-    popup.classList.add('tt-popup', 'tt-popup-reminders')
-
-    popup.appendChild(this._dayInput)
-    popup.appendChild(this._textInput)
-    popup.appendChild(this._addButton)
-    popup.appendChild(document.createElement('hr'))
-    popup.appendChild(this._remindersList)
-
-    return popup
+    this._addChildren(
+      this._dayInput,
+      this._textInput,
+      this._addButton,
+      document.createElement('hr'),
+      this._remindersList,
+    )
   }
 
   private _buildDayInput() {
@@ -121,44 +115,5 @@ export class ReminderPopup {
     item.appendChild(reminderActions)
 
     return item
-  }
-
-  private _insertOverlay() {
-    const overlay = document.createElement('div')
-    overlay.id = 'overlay'
-    overlay.style.position = 'fixed'
-    overlay.style.left = '0'
-    overlay.style.top = '0'
-    overlay.style.width = '100%'
-    overlay.style.height = '100%'
-    overlay.addEventListener('click', () => this.hide())
-    this._popup.parentElement!.prepend(overlay)
-
-    return overlay
-  }
-
-  public append(parent: HTMLElement): void {
-    parent.appendChild(this._popup)
-  }
-
-  public toggle(): void {
-    if (this._popup.classList.contains('show')) {
-      this.hide()
-    } else {
-      this.show()
-    }
-  }
-
-  public show(): void {
-    this._popup.classList.add('show')
-    this._overlay = this._insertOverlay()
-  }
-
-  public hide(): void {
-    this._popup.classList.remove('show')
-    if (this._overlay) {
-      this._overlay.remove()
-      this._overlay = null
-    }
   }
 }
