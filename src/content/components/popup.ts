@@ -52,6 +52,12 @@ export abstract class Popup {
 
   public hide(): void {
     this._popup.classList.remove('show')
+
+    // clear all inputs
+    const inputs = this._popup.querySelectorAll('input')
+    inputs.forEach((input: HTMLInputElement) => (input.value = ''))
+
+    // remove overlay
     if (this._overlay) {
       this._overlay.remove()
       this._overlay = null
