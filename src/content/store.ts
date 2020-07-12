@@ -58,8 +58,8 @@ export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements 
     if (!this._userId) throw new Error('Not logged in')
 
     await this._initializeWorkspace()
-    await this._loadDay()
-    await this._loadReminders()
+    await this._initializeDay()
+    await this._initializeReminders()
   }
 
   private async _initializeWorkspace() {
@@ -69,7 +69,7 @@ export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements 
     await workspace.ref.set({day: 1})
   }
 
-  private async _loadDay() {
+  private async _initializeDay() {
     const setDay = (doc: WorkspaceDocument) => {
       const data = doc.data()
       this.day = data?.day || 1
@@ -83,7 +83,7 @@ export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements 
     ref.onSnapshot((snapshot) => setDay(snapshot as WorkspaceDocument))
   }
 
-  private async _loadReminders() {
+  private async _initializeReminders() {
     const setReminders = (docs: Array<ReminderDocument>) => {
       this.reminders = docs.map((doc) => {
         return {id: doc.id, ...doc.data()}
@@ -97,6 +97,11 @@ export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements 
     setReminders(ref.docs as Array<ReminderDocument>)
 
     collection.onSnapshot((snapshot) => setReminders(snapshot.docs as Array<ReminderDocument>))
+  }
+
+  public async changeWorkspace(workspace: string): Promise<void> {
+    this._workspace = workspace
+    await this._load()
   }
 
   public async setDay(day: number): Promise<void> {
