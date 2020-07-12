@@ -35,13 +35,13 @@ If you do not want any data to be stored online, you should not use this extensi
 
 The data is being kept in-sync with the online storage system ([Firebase](https://firebase.google.com), if you're curious). That means that changing them in one tab will automatically update any other tabs you (or someone you shared your credentials with) opened that same workspace in.
 
-<!-- TODO: add gif -->
+![Data synchronization demo](./doc/images/01-sync.gif)
 
 #### Separate Games
 
 Since a lot of storytellers and players usually have multiple games going, this extension features workspace separation. If you create a separate workspace for each game you're playing, you can track day and reminders for each game separately.
 
-<!-- TODO: add gif -->
+![Separate games demo](./doc/images/02-workspaces.gif)
 
 _Attention_: Due to technical constraints, workspaces are being distinguished by their name. If you have two workspaces with the same name, you will see the same in-game day and reminders in both workspaces.
 
@@ -67,10 +67,14 @@ Before you can use the extension, you have to register using an email address an
 
 To register, follow these simple instructions:
 
-1. Click on the new calendar icon left of the "Share" button in the top right menu bar <!-- TODO: image here -->
-2. Click on the "Register" link <!-- TODO: image here -->
-3. Fill in registration information and submit the form <!-- TODO: image here -->
-4. You are registered and signed in now - there will not be an email confirmation <!-- TODO: image here -->
+1. Click on the new calendar icon left of the "Share" button in the top right menu bar\
+   ![Registration Step 1](./doc/images/03-registration-01.png)
+2. Click on the "Register" link\
+   ![Registration Step 2](./doc/images/03-registration-02.png)
+3. Fill in registration information and submit the form\
+   ![Registration Step 3](./doc/images/03-registration-03.png)
+4. You are registered and signed in now - there will not be an email confirmation\
+   ![Registration Step 4](./doc/images/03-registration-04.png)
 
 ## Use
 
@@ -79,31 +83,33 @@ To register, follow these simple instructions:
 There isn't really any preparation necessary, but make sure that you _really_ like your workspace names before you create reminders for them.\
 Renaming workspaces can not be recognized by the extension, so a renamed workspace will be treated like a new workspace. The same is true for duplicate workspace names - they will be treated as the same workspace by the extension.
 
-<!-- TODO: gif of workspace renaming here -->
-
 This shortcoming will be addressed by introducing the import/export feature in a later update.
 
 ### Day Tracker
 
 The day tracker can be found next to the calendar icon and you can use it to track the current in-game day. It can not go below `1`.\
-Whenever the tracker reaches a day with reminders, those reminders will pop up at the top of the page. <!-- TODO: gif here -->
+Whenever the tracker reaches a day with reminders, those reminders will pop up at the top of the page.\
+![Day tracker reminder demo](./doc/images/04-day-tracker-reminder.gif)
 
-Tracking back will "rewind" the reminders, so don't have to recreate them if you accidentally navigated to the wrong day. <!-- TODO: gif here -->
+Tracking back will "rewind" the reminders, so don't have to recreate them if you accidentally navigated to the wrong day.\
+![Day tracker backtrack demo](./doc/images/04-day-tracker-rewind.gif)
 
 ### Reminders
 
-Clicking on the calendar icon will open the reminders popup where you can look at open reminders and create new ones. <!-- TODO: gif here -->
+Clicking on the calendar icon will open the reminders popup where you can look at open reminders and create new ones.
 
 #### Adding reminders
 
 Reminders can be added by setting the _absolute_ or the _relative_ day they will be triggered on, entering the reminder and then clicking the "+"-Button or pressing the Enter key.
 
-__Absolute__: Just enter the day the reminder should be triggered on. <!-- TODO: gif here -->\
-__Relative__: Enter "+" followed by the amount of days _from now_ the reminder should be triggered on. <!-- TODO: gif here -->
+__Absolute__: Just enter the day the reminder should be triggered on.
+__Relative__: Enter "+" followed by the amount of days _from now_ the reminder should be triggered on.
+
+![Reminders syntax demo](./doc/images/05-reminders-syntax.gif)
 
 #### Deleting reminders
 
-By clicking on the "—"-Button, you can delete a reminder. Be careful though, deleted reminders can _not_ be recovered. <!-- TODO: gif here -->
+By clicking on the "—"-Button, you can delete a reminder. Be careful though, deleted reminders can _not_ be recovered.
 
 ## Roadmap
 
