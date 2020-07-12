@@ -85,6 +85,29 @@ button.tt-reminders-toggle {
   transition: opacity 0.3s, transform 0.3s cubic-bezier(0.625, 0.01, 0.73, 1.65), visibility 0s 0s;
 }
 
+.tt-popup.tt-popup-auth {
+  right: 75px;
+  width: 200px;
+  min-height: auto;
+}
+
+.tt-popup.tt-popup-auth input {
+  display: block;
+  width: 190px;
+  margin-bottom: 5px;
+}
+
+.tt-popup.tt-popup-auth button {
+  margin-right: 5px;
+  height: 25px;
+}
+
+.tt-popup.tt-popup-auth a {
+  float: right;
+  line-height: 25px;
+  cursor: pointer !important;
+}
+
 input.tt-new-reminder-day {
   width: 60px;
   margin-right: 5px;
