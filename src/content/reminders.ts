@@ -60,10 +60,6 @@ export class Reminders extends EventEmitter<ReminderEvents & ReminderStoreEvents
     await this._reopenReminders()
   }
 
-  public async changeWorkspace(workspace: string): Promise<void> {
-    return this._store.changeWorkspace(workspace)
-  }
-
   private async _checkReminders() {
     const dueReminders = this._store.reminders.filter((reminder) => !reminder.closed && reminder.day <= this._store.day)
 

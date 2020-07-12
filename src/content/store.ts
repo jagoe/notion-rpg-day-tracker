@@ -98,11 +98,6 @@ export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements 
     collection.onSnapshot((snapshot) => setReminders(snapshot.docs as Array<ReminderDocument>))
   }
 
-  public async changeWorkspace(workspace: string): Promise<void> {
-    this._workspace = workspace
-    await this._load()
-  }
-
   public async setDay(day: number): Promise<void> {
     if (!this._userId) throw new Error('Not logged in')
 
