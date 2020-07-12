@@ -31,23 +31,11 @@ export function onLogout(fn: () => void): void {
 }
 
 export async function register(email: string, password: string): Promise<void> {
-  await firebase
-    .auth()
-    .createUserWithEmailAndPassword(email, password)
-    .catch((error: {message: string; code: string}) => {
-      // TODO: display error
-      console.error(`Error registering user '${email}': ${error.message} (${error.code})`)
-    })
+  await firebase.auth().createUserWithEmailAndPassword(email, password)
 }
 
 export async function login(email: string, password: string): Promise<void> {
-  await firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .catch((error: {message: string; code: string}) => {
-      // TODO: display error
-      console.error(`Error signing in user '${email}': ${error.message} (${error.code})`)
-    })
+  await firebase.auth().signInWithEmailAndPassword(email, password)
 }
 
 export async function logout(): Promise<void> {
@@ -56,13 +44,5 @@ export async function logout(): Promise<void> {
     return
   }
 
-  await firebase
-    .auth()
-    .signOut()
-    .catch((error: {message: string; code: string}) => {
-      // TODO: display error
-      const displayName = currentUser.displayName || ''
-
-      console.error(`Error signing out user '${displayName}': ${error.message} (${error.code})`)
-    })
+  await firebase.auth().signOut()
 }

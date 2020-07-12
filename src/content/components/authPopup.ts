@@ -1,6 +1,7 @@
 import * as backend from '../../util/backend'
 import {KeyCode} from '../util/keyCode'
 import {Popup} from './popup'
+import {FlashMessageService} from './flashMessageService'
 
 export class AuthPopup extends Popup {
   private _emailInput: HTMLInputElement
@@ -109,19 +110,21 @@ export class AuthPopup extends Popup {
     const passwordConfirmation = this._passwordConfirmationInput.value
 
     if (!AuthPopup.EMAIL_PATTERN.test(email)) {
-      // TODO: display error
-      console.error('Not a valid email address')
+      FlashMessageService.error('Please enter a valid email address')
       return
     }
 
     if (password !== passwordConfirmation) {
-      // TODO: display error
-      console.error('Passwords do not match')
+      FlashMessageService.error('The passwords do not match')
       return
     }
 
-    await backend.register(email, password)
-    // TODO: display error if failed
+    if (password.length < 6) {
+      FlashMessageService.error('Passwords should be at least 6 characters')
+      return
+    }
+
+    await backend.register(email, password).catch(this._handleError)
     this.hide()
   }
 
@@ -129,8 +132,30 @@ export class AuthPopup extends Popup {
     const email = this._emailInput.value
     const password = this._passwordInput.value
 
-    await backend.login(email, password)
-    // TODO: display error if failed
+    await backend.login(email, password).catch(this._handleError)
     this.hide()
+  }
+
+  private _handleError(error: {message: string; code: string}) {
+    switch (error.code) {
+      case 'auth/invalid-email':
+        FlashMessageService.error('Please enter a valid email address')
+        break
+      case 'auth/user-not-found':
+        FlashMessageService.error('That user does not exist')
+        break
+      case 'auth/wrong-password':
+        FlashMessageService.error('Please enter the correct password')
+        break
+      case 'auth/weak-password':
+        FlashMessageService.error('Passwords should be at least 6 characters')
+        break
+      case 'auth/email-already-in-use':
+        FlashMessageService.error('An account with that email already exists')
+        break
+      default:
+        console.warn(`Unknown error: ${error.message} (${error.code})`)
+        break
+    }
   }
 }
