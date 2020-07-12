@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Notion RPG Day Tracker",
-  "version": "0.1",
-  "description": "Extend the fabulous notion.so by an in-game day tracker with reminders.",
+  "version": "0.4",
+  "description": "Extend the fabulous Notion by an in-game day tracker with reminders.",
   "permissions": [],
   "content_scripts": [
     {
