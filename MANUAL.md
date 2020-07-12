@@ -14,12 +14,15 @@
     * [Reminders](#reminders)
   * [Roadmap](#roadmap)
   * [Disclaimer](#disclaimer)
+    * [The Lack of Encryption](#the-lack-of-encryption)
 
 ## Introduction
 
 This application is a Google Chrome browser extension that extends [Notion](https://notion.so). It is intended for use by Role Players and Role-Playing Storytellers, so some content of this document might not make any sense to you if you aren't familiar with the concept of P&P RPGs.
 
 This extension provides a synchronized day tracker and reminder system and inserts it into an existing Notion workspace. This means that you can track the current in-game day for each game, add reminders for future in-game days and get alerts if one of those reminders gets triggered whenever you change the in-game day.
+
+This extension is currently a work in progress and not feature-complete. Until a major version (v1) has been reached, data loss may still be possible.
 
 ### Notable Features
 
@@ -106,7 +109,6 @@ By clicking on the "—"-Button, you can delete a reminder. Be careful though, d
 
 Our roadmap is pretty unorganized, but here are some issues we want to address in the near future:
 
-* Data encryption: Currently, data is being stored unencrypted. While the stored data should not be sensitive in any way, this is still a no-go.
 * Recurring events: Some events may regularly, such as monthly costs.
 * Data import/export: This will make it possible to copy/move workspaces without losing data and is the foundation for offline storage.
 * Offline storage: We understand that some users prefer not to store data online and we work on accommodating those users.
@@ -117,10 +119,13 @@ Our roadmap is pretty unorganized, but here are some issues we want to address i
 We do not collect any data, but we do store application data online. That data is limited to:
 
 * hashes of the workspaces you are using
-* the unencrypted in-game days and reminders per workspace
+* the [_unencrypted_](#the-lack-of-encryption) in-game days and reminders per workspace
 * the email address you use to sign in
 * a hash of the password you use to sign in
 
 We do not share any of that data with third parties, nor will we ever do that.
 
-This extension is currently a work in progress and not feature-complete. Until a major version (v1) has been reached, data loss may still be possible.
+### The Lack of Encryption
+
+Data encryption would require you to store a key or enter your password every time you opened Notion in a new tab, otherwise we'd have to store the key and that would defeat the purpose.\
+Considering that the stored data (current in-game days and reminders) should not be sensitive at all, we decided that convenience is more important than the hassle that comes with unnecessary security. If that doesn't work for you, there will be an offline storage feature that stores everything on your machine which makes encryption unnecessary.
