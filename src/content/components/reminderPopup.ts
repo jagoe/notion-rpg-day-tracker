@@ -1,8 +1,9 @@
-import {Reminder, Reminders} from '../reminders'
+import {Reminders} from '../reminders'
 import {KeyCode} from '../util/keyCode'
+import {Reminder} from '../models'
 import {FlashMessageService} from './flashMessageService'
 
-export class Popup {
+export class ReminderPopup {
   private _popup: HTMLDivElement
   private _dayInput: HTMLInputElement
   private _textInput: HTMLInputElement
@@ -16,11 +17,8 @@ export class Popup {
     this._addButton = this._buildAddButton()
     this._remindersList = this._buildRemindersList()
 
-    void this._reminders.initialized.then(() => {
-      this._renderReminders(this._reminders.openReminders)
-    })
-    _reminders.on('update', (reminders) => {
-      this._renderReminders(reminders)
+    _reminders.on('reminders', (reminders) => {
+      this._renderReminders(reminders.filter((reminder) => !reminder.closed))
     })
 
     this._popup = this._buildPopup()
@@ -28,7 +26,7 @@ export class Popup {
 
   private _buildPopup() {
     const popup = document.createElement('div')
-    popup.classList.add('reminder-popup') // TODO: make it look like the other popups
+    popup.classList.add('tt-popup', 'tt-popup-reminders')
 
     popup.appendChild(this._dayInput)
     popup.appendChild(this._textInput)
@@ -41,7 +39,7 @@ export class Popup {
 
   private _buildDayInput() {
     const input = document.createElement('input')
-    input.classList.add('new-reminder-day')
+    input.classList.add('tt-new-reminder-day')
     input.placeholder = 'Day'
 
     input.addEventListener('keypress', (event) => void this._addNewReminder(event))
@@ -51,7 +49,7 @@ export class Popup {
 
   private _buildTextInput() {
     const input = document.createElement('input')
-    input.classList.add('new-reminder-text')
+    input.classList.add('tt-new-reminder-text')
     input.placeholder = 'New Reminder'
 
     input.addEventListener('keypress', (event) => void this._addNewReminder(event))
@@ -61,7 +59,7 @@ export class Popup {
 
   private _buildAddButton() {
     const button = document.createElement('button')
-    button.classList.add('add-reminder')
+    button.classList.add('tt-add-reminder', 'text')
     button.textContent = '+'
 
     button.addEventListener('click', () => void this._addNewReminder())
@@ -85,7 +83,7 @@ export class Popup {
 
   private _buildRemindersList() {
     const list = document.createElement('ul')
-    list.classList.add('reminders')
+    list.classList.add('tt-reminders')
 
     return list
   }
@@ -109,7 +107,8 @@ export class Popup {
 
     const reminderActions = document.createElement('span')
     const deleteReminder = document.createElement('button')
-    deleteReminder.textContent = '–'
+    deleteReminder.classList.add('text')
+    deleteReminder.textContent = '\u2013'
     deleteReminder.addEventListener('click', () => {
       void this._reminders.remove(reminder).catch((error: Error) => {
         FlashMessageService.error(error.message)
@@ -132,7 +131,7 @@ export class Popup {
     overlay.style.top = '0'
     overlay.style.width = '100%'
     overlay.style.height = '100%'
-    overlay.addEventListener('click', () => this.hideReminderPopup())
+    overlay.addEventListener('click', () => this.hide())
     this._popup.parentElement!.prepend(overlay)
 
     return overlay
@@ -144,18 +143,18 @@ export class Popup {
 
   public toggle(): void {
     if (this._popup.classList.contains('show')) {
-      this.hideReminderPopup()
+      this.hide()
     } else {
-      this.showReminderPopup()
+      this.show()
     }
   }
 
-  public showReminderPopup(): void {
+  public show(): void {
     this._popup.classList.add('show')
     this._overlay = this._insertOverlay()
   }
 
-  public hideReminderPopup(): void {
+  public hide(): void {
     this._popup.classList.remove('show')
     if (this._overlay) {
       this._overlay.remove()

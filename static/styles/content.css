@@ -18,8 +18,11 @@
 }
 
 .time-tracker button {
-  border: 0;
   background: transparent;
+}
+
+.time-tracker button.text {
+  border: 0;
   font-weight: bold;
   font-size: large;
 }
@@ -32,13 +35,13 @@
   box-shadow: rgba(255, 255, 255, 0.07) 0px -1px 0px 0px;
 }
 
-#time-tracker-days {
+#tt-days {
   width: 5em;
   height: 24px;
   margin-right: 5px;
 }
 
-button.reminders-toggle {
+button.tt-reminders-toggle {
   position: relative;
   top: 3px;
   height: 20px;
@@ -49,82 +52,89 @@ button.reminders-toggle {
   border: 0;
 }
 
-.reminders-toggle:hover {
+.tt-reminders-toggle:hover {
   background-color: rgb(71, 76, 80);
   border-radius: 2px;
 }
 
-.reminder-popup {
+.tt-popup {
+  display: block;
   position: fixed;
-  display: none;
-  visibility: hidden;
   min-height: 240px;
   width: 400px;
-  right: 20px;
-  padding: 5px;
-  margin-top: 10px;
   max-width: calc(100vw - 24px);
+  right: 20px;
+  margin-top: 10px;
+  padding: 5px;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95, 0.95);
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.625, 0.01, 0.73, 1.65), visibility 0s 0.3s;
+
   border-radius: 3px;
   background: rgb(63, 68, 71);
   box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.2) 0px 3px 6px,
     rgba(15, 15, 15, 0.4) 0px 9px 24px;
 }
 
-.reminder-popup.show {
-  display: block;
+.tt-popup.show {
+  opacity: 1;
   visibility: visible;
+  transform: scale(1, 1);
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.625, 0.01, 0.73, 1.65), visibility 0s 0s;
 }
 
-input.new-reminder-day {
+input.tt-new-reminder-day {
   width: 60px;
   margin-right: 5px;
 }
 
-input.new-reminder-text {
+input.tt-new-reminder-text {
   width: 305px;
 }
 
-button.add-reminder {
+button.tt-add-reminder {
   position: absolute;
   right: 0;
 }
 
-ul.reminders {
+ul.tt-reminders {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 /* TODO: These should less randomly match the line they are meant to match (i.e. same padding as the inputs, etc.) */
-ul.reminders > li {
+ul.tt-reminders > li {
   display: flex;
   justify-content: flex-start;
   padding: 5px;
 }
 
-.reminders > li span:nth-of-type(2) {
+.tt-reminders > li span:nth-of-type(2) {
   width: 100%;
   padding-left: 15px;
   align-self: flex-start;
 }
 
-.reminders > li span:first-of-type {
+.tt-reminders > li span:first-of-type {
   width: 70px;
   padding-left: 5px;
 }
 
-.reminders > li span:last-of-type {
+.tt-reminders > li span:last-of-type {
   width: 30px;
   margin-right: 2px;
 }
 
-.reminders > li span:last-of-type > button {
+.tt-reminders > li span:last-of-type > button {
   position: relative;
   left: 12px;
   line-height: 0;
 }
 
-ul.time-tracker-message-bar {
+ul.tt-message-bar {
   position: absolute;
   left: 0;
   top: 0;
@@ -135,7 +145,7 @@ ul.time-tracker-message-bar {
   padding: 0;
 }
 
-ul.time-tracker-message-bar > li {
+ul.tt-message-bar > li {
   position: relative;
   padding: 5px;
   padding-left: 15px;
@@ -145,23 +155,23 @@ ul.time-tracker-message-bar > li {
   transition: transform ease-in 200ms;
 }
 
-ul.time-tracker-message-bar > li.out {
+ul.tt-message-bar > li.out {
   transform: translateY(-45px);
 }
 
-ul.time-tracker-message-bar > li.error {
+ul.tt-message-bar > li.error {
   background-color: darkred;
 }
 
-ul.time-tracker-message-bar > li.warning {
+ul.tt-message-bar > li.warning {
   background-color: darkgoldenrod;
 }
 
-ul.time-tracker-message-bar > li.info {
+ul.tt-message-bar > li.info {
   background-color: darkcyan;
 }
 
-ul.time-tracker-message-bar > li > button {
+ul.tt-message-bar > li > button {
   height: 35px;
   width: 35px;
   float: right;
@@ -173,7 +183,7 @@ ul.time-tracker-message-bar > li > button {
   transition: transform ease-in 200ms;
 }
 
-ul.time-tracker-message-bar > li > button:hover {
+ul.tt-message-bar > li > button:hover {
   color: #cccccc;
 }
 
@@ -181,6 +191,10 @@ ul.time-tracker-message-bar > li > button:hover {
   background: rgba(242, 241, 238, 0.6);
 }
 
-.time-tracker.light .reminder-popup {
+.time-tracker.light .tt-popup {
   background: #ffffff;
+}
+
+.hidden {
+  display: none;
 }

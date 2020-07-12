@@ -20,8 +20,7 @@
       "DOM",
       "ES2020"
     ],
-    "module": "ES2020",
-    "moduleResolution": "classic",
+    "module": "CommonJS",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,

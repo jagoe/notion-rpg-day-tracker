@@ -9,7 +9,6 @@ async function run() {
   const currentWorkspace = await getCurrentWorkspace()
 
   const reminders = new Reminders(currentWorkspace)
-  await reminders.initialized
   const timeTracker = new TimeTracker(reminders)
 
   reminders.on('reminder', (reminder) => {
