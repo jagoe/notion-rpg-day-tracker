@@ -83,12 +83,12 @@ export class AuthPopup extends Popup {
         this._mode = 'register'
         this._submitButton.textContent = 'Register'
         this._passwordConfirmationInput.classList.remove('hidden')
-        anchor.textContent = 'Register'
+        anchor.textContent = 'Login'
       } else {
         this._mode = 'login'
         this._submitButton.textContent = 'Login'
         this._passwordConfirmationInput.classList.add('hidden')
-        anchor.textContent = 'Login'
+        anchor.textContent = 'Register'
       }
     })
 
