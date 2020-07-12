@@ -58,15 +58,20 @@ button.tt-reminders-toggle {
 }
 
 .tt-popup {
+  display: block;
   position: fixed;
-  display: none;
-  visibility: hidden;
   min-height: 240px;
   width: 400px;
-  right: 20px;
-  padding: 5px;
-  margin-top: 10px;
   max-width: calc(100vw - 24px);
+  right: 20px;
+  margin-top: 10px;
+  padding: 5px;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95, 0.95);
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.625, 0.01, 0.73, 1.65), visibility 0s 0.3s;
+
   border-radius: 3px;
   background: rgb(63, 68, 71);
   box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.2) 0px 3px 6px,
@@ -74,8 +79,10 @@ button.tt-reminders-toggle {
 }
 
 .tt-popup.show {
-  display: block;
+  opacity: 1;
   visibility: visible;
+  transform: scale(1, 1);
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.625, 0.01, 0.73, 1.65), visibility 0s 0s;
 }
 
 input.tt-new-reminder-day {
