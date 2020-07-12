@@ -1,5 +1,6 @@
 import {Reminders} from '../reminders'
 import * as backend from '../../util/backend'
+import {KeyCode} from '../util/keyCode'
 import {ReminderPopup} from './reminderPopup'
 import {AuthPopup} from './authPopup'
 
@@ -101,6 +102,11 @@ export class TimeTracker {
   private _trapEvents() {
     this._timeTracker.addEventListener('keydown', (event) => {
       event.stopImmediatePropagation()
+
+      if (event.keyCode === KeyCode.Escape) {
+        this._reminderPopup.hide()
+        this._authPopup.hide()
+      }
     })
     this._timeTracker.addEventListener('keyup', (event) => {
       event.stopImmediatePropagation()
