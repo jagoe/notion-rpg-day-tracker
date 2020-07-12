@@ -9,25 +9,27 @@ export class AuthPopup extends Popup {
   private _passwordConfirmationInput: HTMLInputElement
   private _submitButton: HTMLButtonElement
   private _toggleLink: HTMLAnchorElement
+  private _form: HTMLFormElement
 
   private _mode: 'login' | 'register' = 'login'
 
   public constructor() {
     super('auth')
 
+    this._form = this._buildForm()
     this._emailInput = this._buildEmailInput()
     this._passwordInput = this._buildPassInput()
     this._passwordConfirmationInput = this._buildPassConfirmationInput()
     this._submitButton = this._buildSubmitButton()
     this._toggleLink = this._buildToggleLink()
 
-    this._addChildren(
-      this._emailInput,
-      this._passwordInput,
-      this._passwordConfirmationInput,
-      this._submitButton,
-      this._toggleLink,
-    )
+    this._form.appendChild(this._emailInput)
+    this._form.appendChild(this._passwordInput)
+    this._form.appendChild(this._passwordConfirmationInput)
+    this._form.appendChild(this._submitButton)
+    this._form.appendChild(this._toggleLink)
+
+    this._addChildren(this._form)
 
     this._popup.addEventListener('keypress', (event) => {
       if (event.keyCode !== KeyCode.Enter) return
@@ -36,10 +38,18 @@ export class AuthPopup extends Popup {
     })
   }
 
+  private _buildForm() {
+    const form = document.createElement('form')
+    form.addEventListener('submit', (event) => event.preventDefault())
+
+    return form
+  }
+
   private _buildEmailInput() {
     const input = document.createElement('input')
     input.type = 'email'
     input.placeholder = 'Email'
+    input.autocomplete = 'true'
 
     return input
   }
@@ -48,6 +58,7 @@ export class AuthPopup extends Popup {
     const input = document.createElement('input')
     input.type = 'password'
     input.placeholder = 'Password'
+    input.autocomplete = 'true'
 
     return input
   }
@@ -56,6 +67,7 @@ export class AuthPopup extends Popup {
     const input = document.createElement('input')
     input.type = 'password'
     input.placeholder = 'Confirm password'
+    input.autocomplete = 'true'
     input.classList.add('hidden')
 
     return input
