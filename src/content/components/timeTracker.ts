@@ -8,17 +8,21 @@ export class TimeTracker {
   private _authPopup: AuthPopup
   private _reminderPopup: ReminderPopup
   private _timeTracker: HTMLDivElement
+  private _currentTheme: string
 
   public constructor(private _reminders: Reminders) {
+    this._currentTheme = this._getTheme()
+
     this._authPopup = new AuthPopup()
     this._reminderPopup = new ReminderPopup(_reminders)
     this._timeTracker = this._buildTimeTracker()
     this._trapEvents()
+    this._watchTheme()
   }
 
   private _buildTimeTracker() {
     const timeTracker = document.createElement('div')
-    timeTracker.classList.add('time-tracker', this._getTheme())
+    timeTracker.classList.add('time-tracker', this._currentTheme)
 
     const {label, input} = this._buildDayInput()
     timeTracker.appendChild(label)
@@ -127,6 +131,17 @@ export class TimeTracker {
 
   private _getTheme() {
     return document.body.classList.contains('dark') ? 'dark' : 'light'
+  }
+
+  private _watchTheme() {
+    setInterval(() => {
+      const newTheme = this._getTheme()
+      if (newTheme === this._currentTheme) return
+
+      this._timeTracker.classList.remove(this._currentTheme)
+      this._currentTheme = newTheme
+      this._timeTracker.classList.add(this._currentTheme)
+    })
   }
 
   public prepend(parent: Element): void {
