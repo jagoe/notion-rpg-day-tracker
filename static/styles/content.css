@@ -14,7 +14,7 @@
   border: 0;
   border-radius: 3px;
   box-shadow: rgba(15, 15, 15, 0.2) 0px 0px 0px 1px inset, rgba(15, 15, 15, 0.2) 0px 1px 1px inset;
-  background: rgba(15, 15, 15, 0.3);
+  background: rgba(242, 241, 238, 0.6);
 }
 
 .time-tracker button {
@@ -73,7 +73,7 @@ button.tt-reminders-toggle {
   transition: opacity 0.3s, transform 0.3s cubic-bezier(0.625, 0.01, 0.73, 1.65), visibility 0s 0.3s;
 
   border-radius: 3px;
-  background: rgb(63, 68, 71);
+  background: #ffffff;
   box-shadow: rgba(15, 15, 15, 0.1) 0px 0px 0px 1px, rgba(15, 15, 15, 0.2) 0px 3px 6px,
     rgba(15, 15, 15, 0.4) 0px 9px 24px;
 }
@@ -176,6 +176,7 @@ ul.tt-message-bar > li {
   line-height: 35px;
   transform: translateY(0);
   transition: transform ease-in 200ms;
+  color: #ffffff;
 }
 
 ul.tt-message-bar > li.out {
@@ -183,15 +184,15 @@ ul.tt-message-bar > li.out {
 }
 
 ul.tt-message-bar > li.error {
-  background-color: darkred;
+  background-color: #ff5252;
 }
 
 ul.tt-message-bar > li.warning {
-  background-color: darkgoldenrod;
+  background-color: #fb8c00;
 }
 
 ul.tt-message-bar > li.info {
-  background-color: darkcyan;
+  background-color: #2196f3;
 }
 
 ul.tt-message-bar > li > button {
@@ -206,18 +207,18 @@ ul.tt-message-bar > li > button {
   transition: transform ease-in 200ms;
 }
 
+.hidden {
+  display: none;
+}
+
 ul.tt-message-bar > li > button:hover {
   color: #cccccc;
 }
 
-.time-tracker.light input {
-  background: rgba(242, 241, 238, 0.6);
+body.dark .time-tracker input {
+  background: rgba(15, 15, 15, 0.3);
 }
 
-.time-tracker.light .tt-popup {
-  background: #ffffff;
-}
-
-.hidden {
-  display: none;
+body.dark .tt-popup {
+  background: rgb(63, 68, 71);
 }
