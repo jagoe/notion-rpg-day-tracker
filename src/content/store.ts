@@ -16,7 +16,6 @@ export interface ReminderStoreEvents {
 }
 
 export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements Workspace {
-  // TODO: merge Reminders & ReminderStore
   private _userId: string | null = null
   private _db = firebase.firestore()
 

@@ -67,10 +67,10 @@ Before you can use the extension, you have to register using an email address an
 
 To register, follow these simple instructions:
 
-1. Click on the new calendar icon left of the "Share" button in the top right menu bar <!-- image here -->
-2. Click on the "Register" link <!-- image here -->
-3. Fill in registration information and submit the form <!-- image here -->
-4. You are registered and signed in now - there will not be an email confirmation <!-- image here -->
+1. Click on the new calendar icon left of the "Share" button in the top right menu bar <!-- TODO: image here -->
+2. Click on the "Register" link <!-- TODO: image here -->
+3. Fill in registration information and submit the form <!-- TODO: image here -->
+4. You are registered and signed in now - there will not be an email confirmation <!-- TODO: image here -->
 
 ## Use
 
@@ -86,24 +86,24 @@ This shortcoming will be addressed by introducing the import/export feature in a
 ### Day Tracker
 
 The day tracker can be found next to the calendar icon and you can use it to track the current in-game day. It can not go below `1`.\
-Whenever the tracker reaches a day with reminders, those reminders will pop up at the top of the page. <!-- gif here -->
+Whenever the tracker reaches a day with reminders, those reminders will pop up at the top of the page. <!-- TODO: gif here -->
 
-Tracking back will "rewind" the reminders, so don't have to recreate them if you accidentally navigated to the wrong day. <!-- gif here -->
+Tracking back will "rewind" the reminders, so don't have to recreate them if you accidentally navigated to the wrong day. <!-- TODO: gif here -->
 
 ### Reminders
 
-Clicking on the calendar icon will open the reminders popup where you can look at open reminders and create new ones. <!-- gif here -->
+Clicking on the calendar icon will open the reminders popup where you can look at open reminders and create new ones. <!-- TODO: gif here -->
 
 #### Adding reminders
 
 Reminders can be added by setting the _absolute_ or the _relative_ day they will be triggered on, entering the reminder and then clicking the "+"-Button or pressing the Enter key.
 
-__Absolute__: Just enter the day the reminder should be triggered on. <!-- gif here -->\
-__Relative__: Enter "+" followed by the amount of days _from now_ the reminder should be triggered on. <!-- gif here -->
+__Absolute__: Just enter the day the reminder should be triggered on. <!-- TODO: gif here -->\
+__Relative__: Enter "+" followed by the amount of days _from now_ the reminder should be triggered on. <!-- TODO: gif here -->
 
 #### Deleting reminders
 
-By clicking on the "—"-Button, you can delete a reminder. Be careful though, deleted reminders can _not_ be recovered. <!-- gif here -->
+By clicking on the "—"-Button, you can delete a reminder. Be careful though, deleted reminders can _not_ be recovered. <!-- TODO: gif here -->
 
 ## Roadmap
 
