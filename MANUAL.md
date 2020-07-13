@@ -13,8 +13,9 @@
     * [Day Tracker](#day-tracker)
     * [Reminders](#reminders)
   * [Roadmap](#roadmap)
+  * [Self-hosting](#self-hosting)
   * [Disclaimer](#disclaimer)
-    * [The Lack of Encryption](#the-lack-of-encryption)
+    * [The Lack of End-to-End Encryption](#the-lack-of-end-to-end-encryption)
 
 ## Introduction
 
