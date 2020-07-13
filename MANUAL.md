@@ -120,6 +120,10 @@ Our roadmap is pretty unorganized, but here are some issues we want to address i
 * Offline storage: We understand that some users prefer not to store data online and we work on accommodating those users.
 * Calendar (maybe): We chose days as the tracking unit, because different settings use different calendars. For that reason, this feature needs support for custom calendars, which is a hard maybe.
 
+## Self-hosting
+
+Feel free to host a Firebase application yourself. That combined with [local "installation"](#local) ensures that noone but you can access your data.
+
 ## Disclaimer
 
 We do not collect any data, but we do store application data online. That data is limited to:
