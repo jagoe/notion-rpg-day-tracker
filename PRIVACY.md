@@ -38,7 +38,7 @@ In this context, our definition of "personal data" is that of the General Data P
 IP and that we do not use tracking or identifying cookies or similar information.
 
 __We support the right to be forgotten.__\
-If you want your data removed, simply send an email request from the email you used to sign up. Your data will then be removed completely.
+If you want your data removed, simply send [us](mailto:ndt@infinite-turtles.dev) an email request from the email you used to sign up. Your data will then be removed completely.
 
 __Questions?__\
 Feel free to [contact us](mailto:ndt@infinite-turtles.dev).
