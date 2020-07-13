@@ -6,7 +6,7 @@ with a [local setup](./MANUAL.md#local) instead.
 
 ## tl;dr
 
-We process and store what we need to provide functionality and keep your data safe - nothing more and nothing less. We treat your data conscientiously.\
+We process and store only what we need to provide functionality and keep your data safe - nothing more and nothing less. We treat your data conscientiously.
 
 ## Long version
 
