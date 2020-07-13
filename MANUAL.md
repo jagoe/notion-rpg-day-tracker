@@ -125,13 +125,15 @@ Our roadmap is pretty unorganized, but here are some issues we want to address i
 We do not collect any data, but we do store application data online. That data is limited to:
 
 * hashes of the workspaces you are using
-* the [_unencrypted_](#the-lack-of-encryption) in-game days and reminders per workspace
+* the in-game days and reminders per workspace
 * the email address you use to sign in
 * a hash of the password you use to sign in
 
 We do not share any of that data with third parties, nor will we ever do that.
 
-### The Lack of Encryption
+### The Lack of End-to-End Encryption
 
-Data encryption would require you to store a key or enter your password every time you opened Notion in a new tab, otherwise we'd have to store the key and that would defeat the purpose.\
+End-to-end data encryption would require you to store a key or enter your password every time you opened Notion in a new tab.\
 Considering that the stored data (current in-game days and reminders) should not be sensitive at all, we decided that convenience is more important than the hassle that comes with unnecessary security. If that doesn't work for you, there will be an offline storage feature that stores everything on your machine which makes encryption unnecessary.
+
+That being said, data will be [encrypted by Firestore](https://firebase.google.com/support/privacy/#data_encryption) before being written to disk. Combined with Firestore security rules that means that only you and administrators can access your data.
