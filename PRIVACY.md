@@ -41,4 +41,4 @@ __We support the right to be forgotten.__\
 If you want your data removed, simply send an email request from the email you used to sign up. Your data will then be removed completely.
 
 __Questions?__\
-Feel free to contact us at <mailto:ndt@infinite-turtles.dev>.
+Feel free to [contact us](mailto:ndt@infinite-turtles.dev).
