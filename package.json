@@ -1,6 +1,6 @@
 {
   "name": "notion-rpg-time-tracker",
-  "version": "0.4",
+  "version": "0.4.1",
   "description": "A Chrome extension that adds a day tracker and reminders to the fabulous notion.so",
   "main": "dist/index.js",
   "repository": "git@github.com:jagoe/notion-rpg-time-tracker.git",
@@ -10,10 +10,13 @@
   "scripts": {
     "clean:build": "rm -rf dist/*",
     "clean:release": "rm -rf release/*",
+    "lint": "eslint 'src/**/*.ts' --fix --format codeframe",
+    "version:manifest": "sed -i \"s/{{version}}/$(jq -r '.version' < ./package.json)/\" ./dist/manifest.json",
     "build": "yarn build:dev",
     "build:dev": "yarn clean:build && webpack --config webpack.dev.js",
+    "postbuild:dev": "yarn version:manifest",
     "build:prod": "yarn clean:build && webpack --config webpack.prod.js",
-    "lint": "eslint 'src/**/*.ts' --fix --format codeframe",
+    "postbuild:prod": "sed -i 's/￿/\\\\uffff/' ./dist/content.js && yarn version:manifest",
     "prerelease": "yarn clean:release && yarn build:prod",
     "release": "7z a -r0 -tzip ./release/notion-rpg-day-tracker.$(jq -r '.version' < ./package.json).zip ./dist/*"
   },
