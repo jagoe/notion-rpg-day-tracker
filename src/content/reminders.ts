@@ -1,6 +1,6 @@
 import {ReminderStore, ReminderStoreEvents} from './store'
 import {EventEmitter} from './util/eventEmitter'
-import {Reminder} from './models'
+import {Reminder, ReminderEdit} from './models'
 
 interface ReminderEvents {
   reminder: Reminder
@@ -29,23 +29,9 @@ export class Reminders extends EventEmitter<ReminderEvents & ReminderStoreEvents
 
   private _dayPattern = /^\+?\d+$/
   public async add(dayString: string, text: string): Promise<void> {
-    if (!text) {
-      throw new Error('Please provide a reminder text.')
-    }
+    const reminder = this._transformReminder({day: dayString, text, closed: false})
+    this._validateReminder(reminder)
 
-    if (!this._dayPattern.test(dayString)) {
-      throw new Error('Please provide a day, optionally prefixed with a + sign.')
-    }
-
-    const day = dayString.startsWith('+') ? this._store.day + Number(dayString.substr(1)) : Number(dayString)
-
-    if (
-      this._store.reminders.some((existingReminder) => existingReminder.day === day && existingReminder.text === text)
-    ) {
-      throw new Error('That reminder already exists.')
-    }
-
-    const reminder = {day, text, closed: false}
     await this._store.addReminder(reminder)
   }
 
@@ -53,11 +39,50 @@ export class Reminders extends EventEmitter<ReminderEvents & ReminderStoreEvents
     await this._store.removeReminder(reminder)
   }
 
+  public async edit(updated: ReminderEdit): Promise<void> {
+    const reminder = this._transformReminder(updated)
+    this._validateReminder(reminder)
+
+    await this._store.updateReminder(reminder)
+  }
+
   public async changeDay(day: number): Promise<void> {
     await this._store.setDay(day)
 
     await this._checkReminders()
     await this._reopenReminders()
+  }
+
+  private _transformReminder(reminder: ReminderEdit): Reminder {
+    const dayText = reminder.day.toString()
+    if (!this._dayPattern.test(dayText)) {
+      throw new Error('Please provide a day, optionally prefixed with a + sign.')
+    }
+
+    const day = dayText.startsWith('+') ? this._store.day + Number(dayText.substr(1)) : Number(dayText)
+
+    return {...reminder, day}
+  }
+
+  private _validateReminder(reminder: ReminderEdit): void {
+    if (!reminder.text) {
+      throw new Error('Please provide a reminder text.')
+    }
+
+    if (reminder.day <= this._store.day) {
+      throw new Error(`The day must be greater than the current in-game day.`)
+    }
+
+    if (
+      this._store.reminders.some(
+        (existingReminder) =>
+          existingReminder.day === reminder.day &&
+          existingReminder.text === reminder.text &&
+          existingReminder.id !== reminder.id,
+      )
+    ) {
+      throw new Error('That reminder already exists.')
+    }
   }
 
   private async _checkReminders() {
