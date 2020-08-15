@@ -4,3 +4,10 @@ export interface Reminder {
   text: string
   closed: boolean
 }
+
+export interface ReminderEdit {
+  id?: string
+  day: number | string
+  text: string
+  closed: boolean
+}

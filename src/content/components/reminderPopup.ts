@@ -67,12 +67,16 @@ export class ReminderPopup extends Popup {
     const day = this._dayInput.value
     const text = this._textInput.value
 
-    await this._reminders.add(day, text).catch((error: Error) => {
+    try {
+      await this._reminders.add(day, text)
+    } catch (err) {
+      const error = err as Error
       FlashMessageService.error(error.message)
-    })
+    }
 
     this._dayInput.value = ''
     this._textInput.value = ''
+    this._dayInput.focus()
   }
 
   private _buildRemindersList() {
@@ -94,10 +98,20 @@ export class ReminderPopup extends Popup {
     const item = document.createElement('li')
 
     const reminderDay = document.createElement('span')
+    reminderDay.setAttribute('contenteditable', 'true')
     reminderDay.textContent = reminder.day.toString()
+    reminderDay.addEventListener(
+      'blur',
+      () => void this._updateReminderEntry({...reminder, day: Number(reminderDay.textContent)}),
+    )
 
     const reminderText = document.createElement('span')
+    reminderText.setAttribute('contenteditable', 'true')
     reminderText.textContent = reminder.text
+    reminderText.addEventListener(
+      'blur',
+      () => void this._updateReminderEntry({...reminder, text: reminderText.textContent || ''}),
+    )
 
     const reminderActions = document.createElement('span')
     const deleteReminder = document.createElement('button')
@@ -115,5 +129,11 @@ export class ReminderPopup extends Popup {
     item.appendChild(reminderActions)
 
     return item
+  }
+
+  private async _updateReminderEntry(reminder: Reminder): Promise<void> {
+    await this._reminders.edit(reminder).catch((error: Error) => {
+      FlashMessageService.error(error.message)
+    })
   }
 }
