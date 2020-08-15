@@ -94,9 +94,11 @@ export class ReminderPopup extends Popup {
     const item = document.createElement('li')
 
     const reminderDay = document.createElement('span')
+    reminderDay.setAttribute('contenteditable', 'true')
     reminderDay.textContent = reminder.day.toString()
 
     const reminderText = document.createElement('span')
+    reminderText.setAttribute('contenteditable', 'true')
     reminderText.textContent = reminder.text
 
     const reminderActions = document.createElement('span')
