@@ -1,6 +1,6 @@
 {
   "name": "notion-rpg-time-tracker",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A Chrome extension that adds a day tracker and reminders to the fabulous notion.so",
   "main": "dist/index.js",
   "repository": "git@github.com:jagoe/notion-rpg-time-tracker.git",
@@ -21,20 +21,20 @@
     "release": "7z a -r0 -tzip ./release/notion-rpg-day-tracker.$(jq -r '.version' < ./package.json).zip ./dist/*"
   },
   "dependencies": {
-    "firebase": "^7.15.5"
+    "firebase": "^8.2.1"
   },
   "devDependencies": {
     "@avenga/eslint-config": "^1.1.0",
-    "@types/chrome": "^0.0.116",
-    "@typescript-eslint/eslint-plugin": "^3.3.0",
-    "@typescript-eslint/parser": "^3.3.0",
-    "copy-webpack-plugin": "^6.0.2",
-    "eslint": "^7.3.0",
-    "eslint-plugin-import": "^2.21.2",
-    "eslint-plugin-prefer-arrow": "^1.2.1",
-    "ts-loader": "^7.0.5",
-    "typescript": "^3.9.5",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "@types/chrome": "^0.0.127",
+    "@typescript-eslint/eslint-plugin": "^4.11.0",
+    "@typescript-eslint/parser": "^4.11.0",
+    "copy-webpack-plugin": "^7.0.0",
+    "eslint": "^7.16.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prefer-arrow": "^1.2.2",
+    "ts-loader": "^8.0.12",
+    "typescript": "^4.1.3",
+    "webpack": "^5.11.0",
+    "webpack-cli": "^4.2.0"
   }
 }

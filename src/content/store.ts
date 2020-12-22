@@ -3,12 +3,12 @@ import * as backend from '../util/backend'
 import {Reminder} from './models'
 import {EventEmitter} from './util/eventEmitter'
 
-interface Workspace extends firebase.firestore.DocumentData {
+interface Workspace extends firebase.default.firestore.DocumentData {
   day: number
 }
 
-interface WorkspaceDocument extends firebase.firestore.DocumentSnapshot<Workspace> {}
-interface ReminderDocument extends firebase.firestore.QueryDocumentSnapshot<Reminder> {}
+interface WorkspaceDocument extends firebase.default.firestore.DocumentSnapshot<Workspace> {}
+interface ReminderDocument extends firebase.default.firestore.QueryDocumentSnapshot<Reminder> {}
 
 export interface ReminderStoreEvents {
   day: number
@@ -17,7 +17,7 @@ export interface ReminderStoreEvents {
 
 export class ReminderStore extends EventEmitter<ReminderStoreEvents> implements Workspace {
   private _userId: string | null = null
-  private _db = firebase.firestore()
+  private _db = firebase.default.firestore()
 
   public initialized: Promise<void>
   public day = 1
